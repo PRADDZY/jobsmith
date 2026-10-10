@@ -234,3 +234,96 @@ button:disabled { cursor: not-allowed; opacity: .58; }
   .proof-summary { grid-template-columns: 1fr 1fr; gap: 12px; padding: 13px; }.proof-summary-copy { grid-column: 1 / -1; }.proof-total { border-left: 0; border-top: 1px solid #e9e9e1; padding: 10px 0 0; }.ledger-grid { grid-template-columns: 1fr; }.ledger-list { min-height: 0; }.ledger-empty { min-height: 155px; }.ledger-detail { min-height: 290px; }.selected-run-stats { gap: 4px; padding: 10px; }.selected-run-stats span { font-size: 6px; }.selected-run-stats strong { font-size: 16px; }.neatlogs-callout { align-items: flex-start; }.trace-state { font-size: 6px; }.evidence-case-copy small { font-size: 6px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
+
+/* Product-facing hierarchy: calm editorial headlines, readable working text. */
+.page-content { padding: 38px 42px 58px; }
+.topbar { padding-right: 42px; padding-left: 42px; }
+.page-heading-row h1, .subpage-heading h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(38px, 3.7vw, 51px); letter-spacing: -1.7px; line-height: 1.04; font-weight: 500; }
+.page-subtitle { max-width: 640px; font-size: 13px; line-height: 1.65; }
+.eyebrow { font-size: 9px; letter-spacing: 1px; }
+.muted-eyebrow { font-size: 9px; letter-spacing: .9px; }
+.environment-pill { font-size: 9px; letter-spacing: .55px; }
+.side-pilot-card { margin: 16px 1px 12px; padding: 12px; border: 1px solid #e3e7df; border-radius: 9px; background: #f4f6f0; }
+.side-pilot-icon { display: grid; width: 27px; height: 27px; margin-bottom: 9px; place-items: center; border-radius: 8px; color: #43816d; background: #e4eee5; }
+.side-pilot-card strong, .side-pilot-card small { display: block; }
+.side-pilot-card strong { color: #415a51; font-size: 11px; font-weight: 680; }
+.side-pilot-card small { margin-top: 4px; color: #899691; font-size: 9px; line-height: 1.45; }
+.hero-card { min-height: 304px; padding: 34px 38px 27px; border-radius: 12px; background: #20353b; }
+.hero-overline { font-size: 9px; letter-spacing: 1px; }
+.hero-card h2 { font-size: clamp(30px, 3vw, 41px); }
+.hero-copy > p { font-size: 13px; line-height: 1.65; }
+.hero-actions .primary-button { min-height: 42px; padding: 0 16px; font-size: 12px; }
+.hero-mode { font-size: 10px; }
+.hero-footnote { font-size: 10px; }
+.metric-grid { gap: 14px; margin-top: 16px; }
+.metric-card { min-height: 115px; padding: 16px 17px 13px; border-radius: 9px; }
+.metric-label { font: 690 9px/1.25 ui-sans-serif, system-ui, sans-serif; letter-spacing: .45px; }
+.metric-value { margin-top: 11px; font-size: 28px; }
+.metric-description { font-size: 10px; line-height: 1.35; }
+.section-heading { margin-top: 32px; }
+.section-heading h2 { font-family: Georgia, "Times New Roman", serif; font-size: 21px; font-weight: 500; letter-spacing: -.35px; }
+.text-button { font-size: 11px; }
+.overview-grid { grid-template-columns: 1.06fr 1fr .94fr; gap: 14px; }
+.workflow-card, .signal-card, .economics-card { min-height: 242px; padding: 18px 18px 14px; border-radius: 9px; }
+.micro-status { font: 650 9px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .3px; }
+.workflow-card h3 { font-family: Georgia, "Times New Roman", serif; font-size: 18px; font-weight: 500; }
+.workflow-card > p { font-size: 11px; line-height: 1.6; }
+.workflow-stats { margin-top: 17px; padding: 11px 0; }
+.workflow-stats strong { font: 650 15px/1 ui-sans-serif, system-ui, sans-serif; }
+.workflow-stats span { font-size: 9px; }
+.workflow-bottom { font-size: 10px; }
+.section-card-heading h3 { font-family: Georgia, "Times New Roman", serif; font-size: 17px; font-weight: 500; }
+.source-pill, .illustrative-label { font-size: 8px; letter-spacing: .35px; }
+.signal-title { font-size: 11px; }
+.signal-copy p { color: #78878a; font-size: 10px; line-height: 1.5; }
+.signal-link { font-size: 10px; }
+.economics-result span { font: 650 8px/1.25 ui-sans-serif, system-ui, sans-serif; letter-spacing: .35px; }
+.economics-result strong { font-size: 29px; }
+.assumption-details { margin-top: 10px; }
+.assumption-details summary { color: #5c7480; font-size: 10px; font-weight: 640; cursor: pointer; }
+.assumption-details[open] summary { margin-bottom: 8px; }
+.economics-assumptions { padding-top: 9px; }
+.economics-assumptions label { font-size: 9px; }
+.economics-foot { font-size: 9px; }
+.fine-print { margin-top: 8px; font-size: 9px; }
+.recent-runs { margin-top: 29px; }
+.run-row { min-height: 56px; }
+.run-row-main strong { font-size: 11px; }
+.run-row-main small { font-size: 9px; }
+.run-score, .run-time { font-size: 9px; }
+.empty-inline { padding: 16px; }
+.empty-inline strong { font-size: 11px; }
+.empty-inline small { font-size: 10px; }
+.empty-inline button { font-size: 10px; }
+.proof-summary, .ledger-list, .ledger-detail { border-radius: 9px; }
+.role-main > p { font-size: 10px; line-height: 1.6; }
+.role-title-row h2 { font-size: 14px; }
+.role-meta { font-size: 9px; }
+.duty-tags span { font-size: 9px; }
+.role-source-placeholder { cursor: default; }
+
+@media (max-width: 900px) {
+  .side-pilot-card { display: none; }
+}
+
+@media (max-width: 1180px) {
+  .overview-grid { grid-template-columns: 1fr 1fr; }
+  .economics-card { grid-column: span 2; }
+}
+
+@media (max-width: 600px) {
+  .page-content { padding: 26px 14px 36px; }
+  .topbar { padding: 0 15px; }
+  .page-heading-row h1, .subpage-heading h1 { font-size: 37px; letter-spacing: -1.4px; }
+  .page-subtitle { font-size: 12px; }
+  .hero-card { min-height: 310px; padding: 23px 18px 20px; }
+  .hero-card h2 { font-size: 29px; }
+  .hero-copy > p { font-size: 11px; }
+  .metric-card { min-height: 100px; padding: 12px 11px; }
+  .metric-label { font-size: 8px; }
+  .metric-value { font-size: 23px; }
+  .metric-description { font-size: 9px; }
+  .overview-grid { grid-template-columns: 1fr; gap: 9px; }
+  .economics-card { grid-column: auto; }
+  .workflow-card, .signal-card, .economics-card { min-height: 0; }
+}

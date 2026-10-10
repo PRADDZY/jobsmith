@@ -16,7 +16,7 @@ function decision(overrides: Partial<AgentDecision> = {}): AgentDecision {
     claims: [{ text: "The renewal can be cancelled in plan settings.", citations: [source.id] }],
     confidence: 0.9,
     rationale: "The request matches a documented billing workflow.",
-    mode: "rules-preview",
+    mode: "sample",
     ...overrides,
   };
 }

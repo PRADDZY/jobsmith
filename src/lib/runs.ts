@@ -16,7 +16,7 @@ function unavailableDecision(testCase: SupportCase): AgentDecision {
     claims: [],
     confidence: 0,
     rationale: "The model request failed; this case is held for human review.",
-    mode: "openrouter",
+    mode: "unavailable",
   };
 }
 

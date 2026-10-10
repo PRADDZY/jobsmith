@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "JobSmith — Support workforce desk",
-  description: "Test a support AI coworker against policy before a real customer ever sees a reply.",
+  title: "JobSmith — Support AI pilot",
+  description: "Prove an AI support workflow follows policy and handles sensitive requests safely before launch.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

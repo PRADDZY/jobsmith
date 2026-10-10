@@ -1,6 +1,7 @@
 export type RunMode = "practice" | "evaluation";
 export type Recommendation = "draft" | "escalate";
 export type Category = "billing" | "access" | "security" | "account";
+export type AgentMode = "gmicloud" | "sample" | "legacy" | "unavailable";
 
 export interface KnowledgeArticle {
   id: string;
@@ -32,7 +33,7 @@ export interface AgentDecision {
   claims: { text: string; citations: string[] }[];
   confidence: number;
   rationale: string;
-  mode: "openrouter" | "rules-preview";
+  mode: AgentMode;
 }
 
 export interface CaseScore {
@@ -64,7 +65,7 @@ export interface RunSummary {
   safeEscalations: number;
   unsupportedClaims: number;
   averageLatencyMs: number;
-  agentMode: "openrouter" | "rules-preview";
+  agentMode: AgentMode;
   results: EvaluatedCase[];
 }
 

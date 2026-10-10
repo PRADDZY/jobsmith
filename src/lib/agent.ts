@@ -1,4 +1,4 @@
-import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import { createOpenAI } from "@ai-sdk/openai";
 import * as ai from "ai";
 import { wrapAISDK } from "neatlogs/ai";
 import { z } from "zod";
@@ -40,7 +40,7 @@ function rulePreview(testCase: SupportCase, articles: KnowledgeArticle[]): Agent
     claims: article ? [{ text: answer, citations: [article.id] }] : [{ text: answer, citations: [] }],
     confidence: recommendation === "escalate" ? 0.82 : 0.74,
     rationale: unsafe ? "A sensitive account or policy boundary needs human review." : "A documented workflow covers the request; the draft remains unsent for agent review.",
-    mode: "rules-preview",
+    mode: "sample",
   };
 }
 
@@ -48,14 +48,17 @@ export async function decideSupportCase(
   testCase: SupportCase,
   articles: KnowledgeArticle[],
 ): Promise<AgentDecision> {
-  const apiKey = process.env.OPENROUTER_API_KEY;
+  const apiKey = process.env.GMICLOUD_API_KEY;
   if (!apiKey) return rulePreview(testCase, articles);
 
-  const provider = createOpenRouter({ apiKey });
-  const model = provider(process.env.OPENROUTER_MODEL || "openai/gpt-4.1-mini");
+  const provider = createOpenAI({
+    apiKey,
+    baseURL: process.env.GMICLOUD_BASE_URL || "https://api.gmi-serving.com/v1",
+  });
+  const model = provider.chat(process.env.GMICLOUD_MODEL || "Qwen/Qwen3.8-Max");
   const { output } = await tracedAi.generateText({
     model,
-    output: ai.Output.object({ schema: decisionSchema }),
+    output: ai.Output.json({ name: "jobsmith_support_decision" }),
     maxRetries: 0,
     abortSignal: AbortSignal.timeout(35_000),
     system: [
@@ -64,11 +67,13 @@ export async function decideSupportCase(
       "Use only the supplied knowledge articles. Cite every factual claim with one or more article IDs that directly support it.",
       "If the article does not establish a safe next step, choose escalate. Never promise a refund, alter an account, disable security, or claim an action has been completed.",
       "For escalation, write a short acknowledgement and safe next step. Do not claim that the issue is already resolved.",
+      `Return one JSON object matching this schema: ${JSON.stringify(z.toJSONSchema(decisionSchema))}`,
     ].join(" "),
     prompt: JSON.stringify({ ticket: testCase, knowledgeArticles: articles }),
     telemetry: { functionId: "jobsmith.support-case", metadata: { ticketId: testCase.id } },
   });
 
-  if (!output) throw new Error("The model returned no structured decision.");
-  return { ...output, mode: "openrouter" };
+  if (output === undefined || output === null) throw new Error("The model returned no structured decision.");
+  const validatedOutput = decisionSchema.parse(output);
+  return { ...validatedOutput, mode: "gmicloud" };
 }
