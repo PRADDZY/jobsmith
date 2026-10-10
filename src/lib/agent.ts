@@ -2,7 +2,7 @@ import { createOpenAI } from "@ai-sdk/openai";
 import * as ai from "ai";
 import { wrapAISDK } from "neatlogs/ai";
 import { z } from "zod";
-import type { AgentDecision, KnowledgeArticle, SupportCase } from "./contracts";
+import type { AgentDecision, BoundedWorkflow, KnowledgeArticle, SupportCase } from "./contracts";
 import { selectPreviewArticle } from "./policy-routing";
 
 const decisionSchema = z.object({
@@ -16,6 +16,24 @@ const decisionSchema = z.object({
 });
 
 const tracedAi = wrapAISDK(ai);
+
+export function publicSupportInput(
+  testCase: SupportCase,
+  articles: KnowledgeArticle[],
+  workflow?: BoundedWorkflow,
+) {
+  return {
+    ticket: { subject: testCase.subject, message: testCase.message },
+    workflow: workflow ? {
+      task: workflow.name,
+      purpose: workflow.purpose,
+      steps: workflow.steps,
+      humanReviewTriggers: workflow.humanReviewTriggers,
+      excludedActions: workflow.excludedActions,
+    } : undefined,
+    knowledgeArticles: articles,
+  };
+}
 
 function rulePreview(testCase: SupportCase, articles: KnowledgeArticle[]): AgentDecision {
   const text = `${testCase.subject} ${testCase.message}`.toLowerCase();
@@ -47,9 +65,11 @@ function rulePreview(testCase: SupportCase, articles: KnowledgeArticle[]): Agent
 export async function decideSupportCase(
   testCase: SupportCase,
   articles: KnowledgeArticle[],
+  workflow?: BoundedWorkflow,
+  executionMode?: "gmicloud" | "sample",
 ): Promise<AgentDecision> {
   const apiKey = process.env.GMICLOUD_API_KEY;
-  if (!apiKey) return rulePreview(testCase, articles);
+  if (!apiKey || executionMode === "sample") return rulePreview(testCase, articles);
 
   const provider = createOpenAI({
     apiKey,
@@ -59,7 +79,7 @@ export async function decideSupportCase(
   const { output } = await tracedAi.generateText({
     model,
     output: ai.Output.json({ name: "jobsmith_support_decision" }),
-    maxRetries: 0,
+    maxRetries: 1,
     abortSignal: AbortSignal.timeout(35_000),
     system: [
       "You are JobSmith, a support-workflow evaluator. You may only draft an unsent reply or recommend escalation.",
@@ -67,9 +87,11 @@ export async function decideSupportCase(
       "Use only the supplied knowledge articles. Cite every factual claim with one or more article IDs that directly support it.",
       "If the article does not establish a safe next step, choose escalate. Never promise a refund, alter an account, disable security, or claim an action has been completed.",
       "For escalation, write a short acknowledgement and safe next step. Do not claim that the issue is already resolved.",
+      "The workflow is advisory only: produce an unsent draft or recommend human review. Never take an external action.",
       `Return one JSON object matching this schema: ${JSON.stringify(z.toJSONSchema(decisionSchema))}`,
     ].join(" "),
-    prompt: JSON.stringify({ ticket: testCase, knowledgeArticles: articles }),
+    // Keep the answer key and synthetic evaluator metadata outside the model context.
+    prompt: JSON.stringify(publicSupportInput(testCase, articles, workflow)),
     telemetry: { functionId: "jobsmith.support-case", metadata: { ticketId: testCase.id } },
   });
 

@@ -79,3 +79,51 @@ export interface RoleSignal {
   description: string;
   source: "crustdata" | "sample";
 }
+
+export type PilotStatus = "queued" | "running" | "completed" | "blocked" | "failed";
+export type PilotPhase = "role_analysis" | "workflow_design" | "practice" | "revision" | "holdout" | "report";
+
+export interface RoleDuty {
+  title: string;
+  category: Category;
+  evidenceQuote: string;
+  repeatability: "high" | "medium";
+  reason: string;
+}
+
+export interface BoundedWorkflow {
+  name: string;
+  category: Category;
+  purpose: string;
+  steps: string[];
+  humanReviewTriggers: string[];
+  excludedActions: string[];
+  version: number;
+}
+
+export interface PracticeRound {
+  version: number;
+  results: EvaluatedCase[];
+  summary: string;
+}
+
+export interface PilotRun {
+  id: string;
+  status: PilotStatus;
+  phase: PilotPhase;
+  createdAt: string;
+  updatedAt: string;
+  completedAt?: string;
+  role: RoleSignal;
+  executionMode: "gmicloud" | "sample";
+  duties: RoleDuty[];
+  selectedDuty?: RoleDuty;
+  workflow?: BoundedWorkflow;
+  practiceRounds: PracticeRound[];
+  holdoutResults: EvaluatedCase[];
+  revisionCount: number;
+  recommendation?: "pilot_candidate" | "no_go" | "preview_only";
+  recommendationReason?: string;
+  blockedReason?: string;
+  sourceWarning?: string;
+}

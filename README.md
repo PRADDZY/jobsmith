@@ -1,20 +1,31 @@
 # JobSmith
 
-**Put a support AI coworker through probation before a customer ever sees a reply.**
+**Would you hire an AI for this support role?**
 
-JobSmith starts from support-role signals, maps repeatable duties to a bounded ticket workflow, and checks that workflow against policy-linked synthetic cases. Drafts stay unsent. When a decision crosses a safety boundary, the workflow should hold it for a person.
+JobSmith starts from a public support job listing, identifies one repeatable task with a quote from the listing, builds a bounded AI workflow for that task, and puts it through practice and unseen synthetic cases. It ends with a clear recommendation for a **supervised sandbox pilot** or **no-go**.
 
-## What works in this build
+No customer inbox is connected. JobSmith never sends a reply, changes an account, or uses real customer records.
 
-- A support-workflow desk with a CrustData role-discovery action and clearly labeled sample listings when no key is configured.
-- A practice inbox with eight synthetic tickets and six synthetic policy articles.
-- A separate four-case held-out evaluation set.
-- GMI Cloud structured decisions through the Vercel AI SDK using `Qwen/Qwen3.8-Max`, with Neatlogs spans around model calls and workflow steps.
-- A clearly labeled sample review when no GMI Cloud key is configured. Sample results are deterministic policy rules, not live model evaluations.
-- SQLite run records that save completed cases as they finish and allow an interrupted run to resume.
-- An editable pilot-economics scenario. Values are assumptions, not a forecast.
+## The user flow
 
-The held-out set is small and synthetic. The scorecard is a workflow signal, not a claim about production accuracy. The “unsupported claims” check only verifies that declared claims cite an article supplied to the model; it does not prove semantic truth.
+1. Discover support openings through CrustData, or choose a clearly labeled bundled sample if CrustData is unavailable.
+2. Select one role. Qwen extracts a repeatable duty and must cite an exact line from the listing.
+3. Qwen designs a narrow workflow that may prepare unsent drafts or recommend human review. It cannot take account actions.
+4. Evaluate the workflow on role-family practice cases. The workflow may be revised at most twice using practice results.
+5. Evaluate the final workflow on a separate held-out set. A live-model run on a live listing can become a supervised pilot candidate only if every held-out check passes. Sample runs always remain previews.
+6. Review the evidence, safety boundaries, and an editable, assumption-labeled capacity estimate.
+
+The synthetic suite has eight practice cases and eight held-out cases across billing, account access, security, and workspace membership. The workflow evaluates only the task family supported by the selected role duty. Passing synthetic checks is a small signal, not a production accuracy claim.
+
+## What each platform does
+
+| Platform | Job in JobSmith |
+| --- | --- |
+| CrustData | Finds public support-role listings and source links. |
+| GMI Cloud | Runs `Qwen/Qwen3.8-Max` for role-duty extraction, workflow design, revisions, and ticket decisions. |
+| Neatlogs | Captures the role-to-decision trace, including model and evaluation steps. |
+| Entire | Records the code evolution in the Git workflow. It is not a runtime dependency. |
+| cfo.ai | Holds the separate operating and customer-pilot planning scenarios. It is not connected to the app's runtime economics estimate. |
 
 ## Run locally
 
@@ -23,51 +34,54 @@ Requirements: Node.js 22+ and npm.
 ```powershell
 npm ci
 Copy-Item .env.example .env.local
-# Add the service keys to .env.local locally; never commit that file.
+# Add service keys locally. Never commit .env.local.
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Without a GMI Cloud key, the workspace offers a sample review. SQLite creates `data/jobsmith.sqlite` on the first run.
+Open [http://localhost:3000](http://localhost:3000). The app creates `data/jobsmith.sqlite` on first use. Without a GMI Cloud key, JobSmith uses deterministic sample rules; the result is visibly labeled **Sample preview** and cannot qualify as a pilot candidate. Without CrustData, the role cards are visibly labeled sample listings.
 
-## Local configuration
+## Configuration
 
-| Variable | Required for | Notes |
+| Variable | Used for | Default / behavior |
 | --- | --- | --- |
-| `GMICLOUD_API_KEY` | Live model decisions | Add your key to `.env.local`; leave blank for the labeled sample review. |
-| `GMICLOUD_BASE_URL` | Live model decisions | Defaults to `https://api.gmi-serving.com/v1`. |
-| `GMICLOUD_MODEL` | Live model decisions | Defaults to `Qwen/Qwen3.8-Max`. |
-| `CRUSTDATA_API_KEY` | Live role discovery | Without it, the screen uses illustrative sample roles. |
-| `NEATLOGS_API_KEY` | Trace export | Optional locally; the SDK initializes once with the server process. |
-| `NEATLOGS_ENDPOINT` | Trace export | Defaults to `https://ingest.neatlogs.com`. |
-| `DATABASE_PATH` | Run storage | Defaults to `./data/jobsmith.sqlite`. Keep this on persistent disk for deployment. |
+| `GMICLOUD_API_KEY` | Live role analysis and workflow evaluation | Missing key selects the labeled sample preview. |
+| `GMICLOUD_BASE_URL` | GMI Cloud OpenAI-compatible endpoint | `https://api.gmi-serving.com/v1` |
+| `GMICLOUD_MODEL` | Model selection | `Qwen/Qwen3.8-Max` |
+| `CRUSTDATA_API_KEY` | Live support-role discovery | Missing or unavailable API returns bundled sample listings with a warning. |
+| `NEATLOGS_API_KEY` | Trace export | Optional for local use. |
+| `NEATLOGS_ENDPOINT` | Trace ingestion | `https://ingest.neatlogs.com` |
+| `DATABASE_PATH` | SQLite filename under `data/` | `jobsmith.sqlite` |
 
-The cfo.ai connection is managed by Codex through MCP; no cfo.ai OAuth credentials belong in the app's `.env.local`.
+The cfo.ai connection is managed separately through Codex MCP. It does not require credentials in the app environment.
 
-## Use the demo
+## Demo script
 
-1. In **Overview**, point out that all tickets, customers, and policies are synthetic, then start **Test 4 held-out cases**.
-2. Show the progress indicator and resulting decision match, evidence coverage, and safe escalation counts.
-3. Open **Results** to inspect case-level decisions and policy sources.
-4. Open **Workflow** to compare a draft with its source article and explain the human-review boundary.
-5. Open **Role signals**. If CrustData is not configured, the screen explicitly labels the examples as samples; with a key, refresh to load indexed public roles and source links.
-6. Change the pilot-economics assumptions and describe the result as an editable scenario rather than a forecast.
-7. For the cfo.ai sponsor demo, open the private **JobSmith Customer Pilot** and **JobSmith Operating Plan** pages and show their separate, assumption-labeled scenarios.
+1. Start by stating: “We help a SaaS founder decide whether a real support-role task is safe enough for a supervised AI pilot.”
+2. Select a live CrustData role and point to the quoted duty evidence. If using sample data, say so before starting.
+3. Start probation. Show role extraction, workflow design, practice evaluation, and up to two revisions.
+4. Explain the boundary: the model can prepare an unsent draft or ask for a person; it cannot touch a customer system.
+5. Open the final held-out checks. Explain the pass gate and the small synthetic sample limitation.
+6. Show the editable capacity estimate as an assumption-based planning aid, not a forecast.
+7. In the hackathon pitch, show Neatlogs trace evidence and Entire code evolution separately. Explain cfo.ai's separate planning use without suggesting the app is linked to it.
 
-For a short capture, record the browser at 1440×900, start on Overview, and keep the browser console hidden. Capture one full held-out run, then show the evidence ledger and a source article. A 2–3 minute walkthrough is enough; do not imply that a customer inbox or production company data is connected.
+Keep the walkthrough under three minutes. Do not imply production readiness or use real customer data.
 
 ## Architecture
 
 ```text
-Next.js dashboard
-  ├─ /api/discovery ── CrustData job search (or labeled local samples)
-  ├─ /api/runs ─────── SQLite run creation and history
-  ├─ /api/runs/[id] ── progress and saved case decisions
-  ├─ /api/runs/[id]/resume ─ resumable evaluation execution
-  └─ support evaluator ─ GMI Cloud (Qwen3.8-Max) + AI SDK + Zod, or labeled sample rules
-                              └─ neatlogs root/case/model spans
+Next.js role-to-pilot workspace
+  ├─ /api/discovery                CrustData search or labeled sample fallback
+  ├─ /api/pilots                   create and list persisted pilot runs
+  ├─ /api/pilots/[id]              retrieve run state and evidence
+  ├─ /api/pilots/[id]/resume       continue saved role-to-pilot state machine
+  ├─ pilot-agent                   structured role extraction and workflow design
+  ├─ support agent                 GMI Cloud structured decisions, no answer key
+  ├─ scoring                       server-side synthetic practice/held-out checks
+  ├─ SQLite                        additive pilot history; prior evaluation runs remain
+  └─ neatlogs                      role, workflow, model, and evaluation traces
 ```
 
-The AI may only recommend an unsent draft or escalation. Ticket text is treated as untrusted. The model receives only the category-matched synthetic policy articles; each decision is schema-validated, checked for known source IDs, scored against the held-out expectation, and saved as a case completes. On interruption, completed cases remain in SQLite and the run endpoint can resume the rest.
+The model receives the customer question, the selected bounded workflow, and relevant synthetic policy articles. It does not receive evaluator answer labels, expected article IDs, fixture practice/holdout status, or synthetic customer identities. Scores and the final gate are computed server-side. Each completed case is saved so a failed run can resume without repeating finished work.
 
 ## Development checks
 
@@ -78,15 +92,12 @@ npm test
 npm run build
 ```
 
-The integration tests use no real customer data or external credentials.
+The tests use synthetic data and do not require external keys.
 
-## Current integration boundary
+## Submission and data boundaries
 
-CrustData, GMI Cloud, and Neatlogs have application paths in this build. cfo.ai is connected separately through Codex MCP, with an illustrative customer-pilot scenario and a separate JobSmith operating-plan scenario in the private workspace. The app's editable economics panel is local-only and is not live-linked to those CFO models.
-
-## Security and data
-
-- `.env.local`, the SQLite database, AWS setup notes, and Neatlogs setup notes are excluded from Git.
-- Customer names, tickets, and policy articles in the demo are synthetic.
-- No support inbox is connected; no reply or account action is sent.
-- Keep deployment on persistent storage because SQLite runs are local process data.
+- Public code includes the Neatlogs, CrustData, and GMI Cloud application paths; no credentials are committed.
+- `.env.local`, SQLite data, AWS setup notes, and Neatlogs setup notes are ignored by Git.
+- Job listing text is public source material; all customer cases and policy articles are synthetic.
+- cfo.ai plans and Entire activity are shown separately from the app runtime.
+- No support inbox, customer database, reply delivery, or account-action integration exists.

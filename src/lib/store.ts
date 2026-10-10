@@ -3,7 +3,7 @@ import Database from "better-sqlite3";
 import { mkdirSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { randomUUID } from "node:crypto";
-import type { AgentMode, EvaluatedCase, RunMode, RunSummary } from "./contracts";
+import type { AgentMode, EvaluatedCase, PilotRun, RoleSignal, RunMode, RunSummary } from "./contracts";
 
 type RunRow = {
   id: string;
@@ -39,6 +39,22 @@ function database(): Database.Database {
       agent_mode TEXT NOT NULL DEFAULT 'sample'
     );
     CREATE INDEX IF NOT EXISTS evaluation_runs_created_at ON evaluation_runs(created_at DESC);
+    CREATE TABLE IF NOT EXISTS pilot_runs (
+      id TEXT PRIMARY KEY,
+      status TEXT NOT NULL,
+      phase TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      record_json TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS pilot_runs_created_at ON pilot_runs(created_at DESC);
+    CREATE TABLE IF NOT EXISTS discovered_roles (
+      source TEXT NOT NULL,
+      id TEXT NOT NULL,
+      role_json TEXT NOT NULL,
+      refreshed_at TEXT NOT NULL,
+      PRIMARY KEY (source, id)
+    );
   `);
   globalStore.jobsmithDb = db;
   return db;
@@ -133,4 +149,65 @@ export function completeRun(id: string): void {
 export function failRun(id: string): void {
   database().prepare("UPDATE evaluation_runs SET status = 'failed', completed_at = ? WHERE id = ?")
     .run(new Date().toISOString(), id);
+}
+
+export function createPilot(role: RoleSignal, sourceWarning?: string, requestedMode?: PilotRun["executionMode"]): PilotRun {
+  const now = new Date().toISOString();
+  const pilot: PilotRun = {
+    id: randomUUID(),
+    status: "queued",
+    phase: "role_analysis",
+    createdAt: now,
+    updatedAt: now,
+    role,
+    executionMode: requestedMode ?? (process.env.GMICLOUD_API_KEY ? "gmicloud" : "sample"),
+    duties: [],
+    practiceRounds: [],
+    holdoutResults: [],
+    revisionCount: 0,
+    sourceWarning,
+  };
+  database().prepare(`INSERT INTO pilot_runs (id, status, phase, created_at, updated_at, record_json)
+    VALUES (@id, @status, @phase, @createdAt, @updatedAt, @record)`).run({
+    id: pilot.id,
+    status: pilot.status,
+    phase: pilot.phase,
+    createdAt: now,
+    updatedAt: now,
+    record: JSON.stringify(pilot),
+  });
+  return pilot;
+}
+
+export function getPilot(id: string): PilotRun | undefined {
+  const row = database().prepare("SELECT record_json FROM pilot_runs WHERE id = ?").get(id) as { record_json: string } | undefined;
+  return row ? JSON.parse(row.record_json) as PilotRun : undefined;
+}
+
+export function listPilots(limit = 6): PilotRun[] {
+  const rows = database().prepare("SELECT record_json FROM pilot_runs ORDER BY created_at DESC LIMIT ?").all(limit) as { record_json: string }[];
+  return rows.map((row) => JSON.parse(row.record_json) as PilotRun);
+}
+
+export function savePilot(pilot: PilotRun): void {
+  pilot.updatedAt = new Date().toISOString();
+  database().prepare("UPDATE pilot_runs SET status = ?, phase = ?, updated_at = ?, record_json = ? WHERE id = ?")
+    .run(pilot.status, pilot.phase, pilot.updatedAt, JSON.stringify(pilot), pilot.id);
+}
+
+export function rememberDiscoveredRoles(roles: RoleSignal[]): void {
+  const db = database();
+  const insert = db.prepare(`INSERT INTO discovered_roles (source, id, role_json, refreshed_at)
+    VALUES (?, ?, ?, ?) ON CONFLICT(source, id) DO UPDATE SET role_json = excluded.role_json, refreshed_at = excluded.refreshed_at`);
+  const now = new Date().toISOString();
+  const transaction = db.transaction(() => {
+    for (const role of roles) insert.run(role.source, role.id, JSON.stringify(role), now);
+  });
+  transaction();
+}
+
+export function getDiscoveredRole(source: RoleSignal["source"], id: string): RoleSignal | undefined {
+  const row = database().prepare("SELECT role_json FROM discovered_roles WHERE source = ? AND id = ?")
+    .get(source, id) as { role_json: string } | undefined;
+  return row ? JSON.parse(row.role_json) as RoleSignal : undefined;
 }

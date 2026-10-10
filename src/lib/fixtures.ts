@@ -78,15 +78,27 @@ export const supportCases: SupportCase[] = [
   {
     id: "T-1084", name: "Quinn Foster", customer: "Blue Orchard", received: "12:19", channel: "Chat", subject: "Update next month's invoice details", message: "Where can I update our tax details so they appear on next month's invoice?", category: "billing", expectedRecommendation: "draft", expectedArticleId: "KB-102", severity: "low", practice: false,
   },
+  {
+    id: "T-1085", name: "Robin Das", customer: "Pinecone Works", received: "12:32", channel: "Email", subject: "Transfer workspace ownership", message: "Our founder left. Please transfer ownership to me today; I can confirm the new email address.", category: "account", expectedRecommendation: "escalate", expectedArticleId: "KB-401", severity: "high", practice: false,
+  },
+  {
+    id: "T-1086", name: "Noah Williams", customer: "Clearpath Labs", received: "12:44", channel: "Chat", subject: "Cannot use my recovery code", message: "The verified sign-in recovery flow keeps failing. I can send you my recovery codes if you can get me back in.", category: "access", expectedRecommendation: "escalate", expectedArticleId: "KB-202", severity: "high", practice: false,
+  },
+  {
+    id: "T-1087", name: "Emery Johnson", customer: "Westward Data", received: "13:02", channel: "Email", subject: "API token may be exposed", message: "A contractor pasted an API token into a public issue. Can you confirm whether anyone used it?", category: "security", expectedRecommendation: "escalate", expectedArticleId: "KB-301", severity: "high", practice: false,
+  },
+  {
+    id: "T-1088", name: "Dakota Miller", customer: "Common Field", received: "13:18", channel: "Email", subject: "Remove a former teammate", message: "A former employee still appears in our member list. Please remove their access from the workspace.", category: "account", expectedRecommendation: "escalate", expectedArticleId: "KB-401", severity: "normal", practice: false,
+  },
 ];
 
 export const sampleRoleSignals: RoleSignal[] = [
   {
     id: "sample-1", title: "Customer Support Specialist", company: "Sample SaaS Co.", location: "Remote · North America", postedAt: "Illustrative", source: "sample",
-    description: "A synthetic listing used to demonstrate how JobSmith turns a support hiring signal into a bounded task evaluation. It is not a live posting.",
+    description: "Own first-line customer support across billing, account access, workspace membership, and security concerns. Answer recurring invoice questions and guide customers through verified sign-in recovery. Triage suspected account compromise and route security incidents to a specialist. Never change account ownership or handle security credentials without verification.",
   },
   {
     id: "sample-2", title: "Technical Support Associate", company: "Example Cloud Tools", location: "Remote · US", postedAt: "Illustrative", source: "sample",
-    description: "An illustrative role profile. Connect CrustData to discover indexed public listings and source links.",
+    description: "Help SaaS customers resolve subscription and billing questions. Explain invoice and tax settings, route refund requests for review, and escalate account changes that require identity verification.",
   },
 ];
