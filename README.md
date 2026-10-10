@@ -2,30 +2,33 @@
 
 **Would you hire an AI for this support role?**
 
-JobSmith starts from a public support job listing, identifies one repeatable task with a quote from the listing, builds a bounded AI workflow for that task, and puts it through practice and unseen synthetic cases. It ends with a clear recommendation for a **supervised sandbox pilot** or **no-go**.
+JobSmith takes a public support job listing, identifies one repeatable duty, and tests a policy-bounded AI coworker on synthetic cases before a team considers a supervised pilot. It returns a clear pilot-candidate or no-go recommendation with the role evidence, policy references, test results, and a traceable agent path.
 
 No customer inbox is connected. JobSmith never sends a reply, changes an account, or uses real customer records.
 
-## The user flow
+## How it works
 
-1. Discover support openings through CrustData, or choose a clearly labeled bundled sample if CrustData is unavailable.
-2. Select one role. Qwen extracts a repeatable duty and must cite an exact line from the listing.
-3. Qwen designs a narrow workflow that may prepare unsent drafts or recommend human review. It cannot take account actions.
-4. Evaluate the workflow on role-family practice cases. The workflow may be revised at most twice using practice results.
-5. Evaluate the final workflow on a separate held-out set. A live-model run on a live listing can become a supervised pilot candidate only if every held-out check passes. Sample runs always remain previews.
-6. Review the evidence, safety boundaries, and an editable, assumption-labeled capacity estimate.
+1. Find public support openings through CrustData, or use a visibly labeled sample listing.
+2. LiteLLM routes Claude Haiku to extract one repeatable duty and quote the source listing.
+3. JobSmith designs a narrow workflow with explicit human-review triggers and actions the coworker is never allowed to take.
+4. Evaluate on the selected duty family's synthetic practice cases. The workflow can be revised up to twice from practice results.
+5. Run the final workflow on a separate held-out set. A new live-model run on a live CrustData listing can be a supervised-pilot candidate only when every practice and held-out check passes. Sample and legacy-provider runs remain previews.
+6. For each synthetic ticket, the agent calls one bounded policy-lookup tool, prepares an unsent draft or escalation, and sends the claims to an independent policy verifier. It may revise once from verifier feedback. If the revised draft still cannot be supported, it holds the case for a person.
+7. Review the evidence and the illustrative capacity estimate. Open the separate editable cfo.ai operating plan for pricing, customer growth, inference and hosting costs, margins, burn, and runway.
 
-The synthetic suite has eight practice cases and eight held-out cases across billing, account access, security, and workspace membership. The workflow evaluates only the task family supported by the selected role duty. Passing synthetic checks is a small signal, not a production accuracy claim.
+The fixture suite contains eight practice and eight held-out cases across billing, account access, security, and workspace membership. Each run uses only the cases for the selected duty family, so the per-run sample is smaller. A pass is a small synthetic signal, not a production accuracy claim.
 
 ## What each platform does
 
 | Platform | Job in JobSmith |
 | --- | --- |
 | CrustData | Finds public support-role listings and source links. |
-| GMI Cloud | Runs `Qwen/Qwen3.8-Max` for role-duty extraction, workflow design, revisions, and ticket decisions. |
-| Neatlogs | Captures the role-to-decision trace, including model and evaluation steps. |
-| Entire | Records the code evolution in the Git workflow. It is not a runtime dependency. |
-| cfo.ai | Holds the separate operating and customer-pilot planning scenarios. It is not connected to the app's runtime economics estimate. |
+| LiteLLM | Routes Claude Haiku through an OpenAI-compatible API for duty extraction, workflow design, draft generation, and independent verification. |
+| Neatlogs | Records the role-to-decision trace, including tool lookup, model steps, verification, revisions, failures, and recovery. PII redaction is enabled. |
+| Entire | Captures code evolution and checkpoints in the Git workflow. It is not a runtime dependency. |
+| cfo.ai | Holds a separate, editable illustrative operating plan and customer-pilot scenario. The app's quick capacity estimate is not linked to that model. |
+
+The cfo.ai JobSmith Operating Plan is available in the connected workspace at [Open operating plan](https://app.cfo.ai/s/p_AQGSpQYkNDhjMTcyNTgtZWIxOS00MTYyLWE3ZjQtOTFhN2Q2NGJmZTgxJDY1Yzc4ZjNkLTRkNDQtNDk3ZC1hODI5LThiOTIzZTlkMmE5ZA). It includes Base and Growth cases with editable assumptions, a 12-month forecast, operating costs, gross margin, cash, burn, and runway. All values are illustrative assumptions, not observed company actuals.
 
 ## Run locally
 
@@ -38,52 +41,55 @@ Copy-Item .env.example .env.local
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The app creates `data/jobsmith.sqlite` on first use. Without a GMI Cloud key, JobSmith uses deterministic sample rules; the result is visibly labeled **Sample preview** and cannot qualify as a pilot candidate. Without CrustData, the role cards are visibly labeled sample listings.
+Open [http://localhost:3000](http://localhost:3000). The app creates `data/jobsmith.sqlite` on first use. Without a LiteLLM key, the app runs deterministic sample rules and labels the result a preview. Without CrustData, it uses clearly labeled sample listings.
 
 ## Configuration
 
 | Variable | Used for | Default / behavior |
 | --- | --- | --- |
-| `GMICLOUD_API_KEY` | Live role analysis and workflow evaluation | Missing key selects the labeled sample preview. |
-| `GMICLOUD_BASE_URL` | GMI Cloud OpenAI-compatible endpoint | `https://api.gmi-serving.com/v1` |
-| `GMICLOUD_MODEL` | Model selection | `Qwen/Qwen3.8-Max` |
+| `LITELLM_API_KEY` | Live role analysis, workflow design, policy-grounded drafts, and verification | Missing key selects the labeled deterministic preview. |
+| `LITELLM_BASE_URL` | LiteLLM OpenAI-compatible endpoint | `https://litellm.vision.aivar.app/v1` |
+| `LITELLM_MODEL` | LiteLLM model alias | `claude-haiku` |
 | `CRUSTDATA_API_KEY` | Live support-role discovery | Missing or unavailable API returns bundled sample listings with a warning. |
 | `NEATLOGS_API_KEY` | Trace export | Optional for local use. |
-| `NEATLOGS_ENDPOINT` | Trace ingestion | `https://ingest.neatlogs.com` |
+| `NEATLOGS_ENDPOINT` | Trace ingestion endpoint | `https://ingest.neatlogs.com` |
 | `DATABASE_PATH` | SQLite filename under `data/` | `jobsmith.sqlite` |
 
-The cfo.ai connection is managed separately through Codex MCP. It does not require credentials in the app environment.
+New runs use LiteLLM or an explicitly selected deterministic preview. Existing GMI Cloud run records remain readable; they are not selected as a fallback for new runs.
 
-## Demo script
-
-1. Start by stating: “We help a SaaS founder decide whether a real support-role task is safe enough for a supervised AI pilot.”
-2. Select a live CrustData role and point to the quoted duty evidence. If using sample data, say so before starting.
-3. Start probation. Show role extraction, workflow design, practice evaluation, and up to two revisions.
-4. Explain the boundary: the model can prepare an unsent draft or ask for a person; it cannot touch a customer system.
-5. Open the final held-out checks. Explain the pass gate and the small synthetic sample limitation.
-6. Show the editable capacity estimate as an assumption-based planning aid, not a forecast.
-7. In the hackathon pitch, show Neatlogs trace evidence and Entire code evolution separately. Explain cfo.ai's separate planning use without suggesting the app is linked to it.
-
-Keep the walkthrough under three minutes. Do not imply production readiness or use real customer data.
+The cfo.ai connection is managed separately through the connected cfo.ai workspace. It does not require an app environment variable.
 
 ## Architecture
 
 ```text
 Next.js role-to-pilot workspace
-  ├─ /api/discovery                CrustData search or labeled sample fallback
-  ├─ /api/pilots                   create and list persisted pilot runs
-  ├─ /api/pilots/[id]              retrieve run state and evidence
-  ├─ /api/pilots/[id]/resume       continue saved role-to-pilot state machine
-  ├─ pilot-agent                   structured role extraction and workflow design
-  ├─ support agent                 GMI Cloud structured decisions, no answer key
-  ├─ scoring                       server-side synthetic practice/held-out checks
-  ├─ SQLite                        additive pilot history; prior evaluation runs remain
-  └─ neatlogs                      role, workflow, model, and evaluation traces
+  /api/discovery                 CrustData role search or labeled sample fallback
+  /api/pilots                     create and list checkpointed runs
+  /api/pilots/[id]                retrieve saved progress and evidence
+  /api/pilots/[id]/resume         continue a role-to-pilot state machine
+  provider                        LiteLLM as the new-run provider; legacy mode is explicit
+  pilot-agent                     structured duty extraction and bounded workflow design
+  support agent                   one policy tool call, draft, verifier, one revision at most
+  scoring                         server-side synthetic practice and held-out checks
+  SQLite                          local run state; completed cases are checkpointed
+  Neatlogs                        nested role, tool, model, verification, and recovery traces
 ```
 
-The model receives the customer question, the selected bounded workflow, and relevant synthetic policy articles. It does not receive evaluator answer labels, expected article IDs, fixture practice/holdout status, or synthetic customer identities. Scores and the final gate are computed server-side. Each completed case is saved so a failed run can resume without repeating finished work.
+The model receives only the ticket text, the selected bounded workflow, and the articles returned by the policy-lookup tool. It does not receive evaluator labels, expected article IDs, practice/holdout status, or synthetic customer identities. Citation IDs are checked against the retrieved policies and an independent model verifier checks whether the draft's factual claims are supported. The score and final pilot gate stay server-side.
 
-## Development checks
+Completed cases are saved before the next begins. A failed model call fails the run without adding an unavailable result as a completed case. Resume skips saved successful cases and retries the failed case without creating duplicates.
+
+## Demo script (under 3 minutes)
+
+1. **0:00-0:20:** “We help a team decide whether a real support-role duty is safe enough for an AI coworker probation test.” State that listings are public and all tickets and policies are synthetic.
+2. **0:20-0:45:** Select a live CrustData opening and point to the exact quoted duty. Clearly label it if using a sample listing.
+3. **0:45-1:30:** Start probation. Show the workflow, one practice result, and the unseen checks. Open a case to show policy lookup, the unsent draft, independent claim check, citation, and any single revision.
+4. **1:30-1:55:** Show the gate. Explain that a pass requires the checks in this small synthetic family; it is only a supervised sandbox candidate, never production approval.
+5. **1:55-2:20:** Open the Neatlogs trace and show the tool, model, verifier, and output steps. Show the Entire checkpoint for the build history.
+6. **2:20-2:45:** Open the cfo.ai operating plan. Call out its editable assumptions for customers, price, model and hosting costs, margin, burn, and runway.
+7. **2:45-3:00:** Close with the boundary: replies remain unsent, no account actions exist, and a human owns every next step.
+
+## Checks
 
 ```powershell
 npm run lint
@@ -92,12 +98,21 @@ npm test
 npm run build
 ```
 
-The tests use synthetic data and do not require external keys.
+The automated tests use synthetic fixtures and do not require external keys. A live demo run uses the local LiteLLM, CrustData, and Neatlogs configuration.
 
-## Submission and data boundaries
+## Hackathon submission checklist
 
-- Public code includes the Neatlogs, CrustData, and GMI Cloud application paths; no credentials are committed.
-- `.env.local`, SQLite data, AWS setup notes, and Neatlogs setup notes are ignored by Git.
-- Job listing text is public source material; all customer cases and policy articles are synthetic.
-- cfo.ai plans and Entire activity are shown separately from the app runtime.
+- Public repository with setup instructions and no service credentials.
+- Public demo video under three minutes.
+- Neatlogs trace showing the role-to-decision path and a verifier or recovery step.
+- Entire checkpoint/graph for this implementation.
+- cfo.ai business plan with pricing, customer assumptions, revenue, inference and hosting costs, gross margin, operating burn, and runway.
+- Public quote post on the official Neatlogs hackathon post using `#neatHack`; draft copy belongs in `submission/social-post-draft.md` and must be published by a team member.
+- Use Neatlogs, Entire, and cfo.ai in the submitted project and demo.
+
+## Data and repository boundaries
+
+- Job listings are public source material; support tickets and policies are synthetic.
 - No support inbox, customer database, reply delivery, or account-action integration exists.
+- `.env.local`, SQLite data, AWS credentials/setup notes, Neatlogs setup notes, and local LiteLLM setup notes are not committed.
+- cfo.ai planning and Entire activity are separate from runtime calculations.

@@ -17,7 +17,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { PilotRun, RoleSignal } from "@/lib/contracts";
 
 type Props = { sampleRoles: RoleSignal[] };
-type Integrations = { gmicloud: boolean; crustdata: boolean; neatlogs: boolean };
+type Integrations = { litellm: boolean; crustdata: boolean; neatlogs: boolean; model?: string };
 
 const phaseCopy: Record<PilotRun["phase"], string> = {
   role_analysis: "Reading role responsibilities",
@@ -145,7 +145,7 @@ export function Dashboard({ sampleRoles }: Props) {
     }
   }, [activePilotId, activePilotStatus, launchPilot, pollPilot]);
 
-  const startPilot = async (executionMode: "gmicloud" | "sample" = integrations?.gmicloud ? "gmicloud" : "sample") => {
+  const startPilot = async (executionMode: "litellm" | "sample" = integrations?.litellm ? "litellm" : "sample") => {
     if (!selectedRole) return;
     setCreating(true);
     setError(undefined);
@@ -182,7 +182,7 @@ export function Dashboard({ sampleRoles }: Props) {
         <div className="pilot-topbar-right">
           <div className="pilot-integration-status" aria-label="Integration status">
             <span className={integrations?.crustdata ? "connected" : "sample"}><i />CrustData</span>
-            <span className={integrations?.gmicloud ? "connected" : "sample"}><i />GMI Cloud</span>
+            <span className={integrations?.litellm ? "connected" : "sample"}><i />LiteLLM</span>
             <span className={integrations?.neatlogs ? "connected" : "sample"}><i />Neatlogs</span>
           </div>
           <span className="pilot-topbar-note"><ShieldCheck size={14} /> Sandbox only</span>
@@ -242,13 +242,13 @@ export function Dashboard({ sampleRoles }: Props) {
             ))}
           </div>
           <div className="pilot-action-row">
-            <p><FileSearch size={15} /> 8 practice examples <span>·</span> 8 unseen checks <span>·</span> 4 synthetic policy families</p>
+            <p><FileSearch size={15} /> Practice set + unseen safety checks <span>·</span> 4 synthetic policy families</p>
             <div className="pilot-action-buttons">
               <button className="pilot-primary-button" type="button" onClick={() => void startPilot()} disabled={!selectedRole || creating || rolesLoading}>
                 {creating ? <LoaderCircle className="pilot-spin" size={16} /> : <Sparkles size={16} />}
-                {integrations?.gmicloud ? "Put this role on probation" : "Run labeled sample preview"} <ArrowRight size={15} />
+                {integrations?.litellm ? "Put this role on probation" : "Run labeled sample preview"} <ArrowRight size={15} />
               </button>
-              {integrations?.gmicloud && <button className="pilot-sample-button" type="button" onClick={() => void startPilot("sample")} disabled={!selectedRole || creating || rolesLoading}>Use a deterministic sample preview</button>}
+              {integrations?.litellm && <button className="pilot-sample-button" type="button" onClick={() => void startPilot("sample")} disabled={!selectedRole || creating || rolesLoading}>Use a deterministic sample preview</button>}
             </div>
           </div>
         </section>
@@ -269,6 +269,7 @@ export function Dashboard({ sampleRoles }: Props) {
           setMinutesPerCase={setMinutesPerCase}
           setTimeSavedPercent={setTimeSavedPercent}
           setHourlyCost={setHourlyCost}
+          modelLabel={integrations?.model ?? "claude-haiku"}
           onResume={resume}
         />}
 
@@ -288,8 +289,8 @@ export function Dashboard({ sampleRoles }: Props) {
           <div className="pilot-platforms-heading"><span>THE STACK, IN PLAIN ENGLISH</span><span>Each tool has one job</span></div>
           <div className="pilot-platform-grid">
             <Platform name="CrustData" role="Finds public support job listings." connected={integrations?.crustdata} />
-            <Platform name="GMI Cloud" role="Qwen extracts duties and tests the coworker." connected={integrations?.gmicloud} />
-            <Platform name="Neatlogs" role="Records the role-to-decision AI trace." connected={integrations?.neatlogs} />
+            <Platform name="LiteLLM" role="Routes Claude Haiku through one OpenAI-compatible endpoint for analysis and policy checks." connected={integrations?.litellm} />
+            <Platform name="Neatlogs" role="Records policy lookup, draft, verifier, revision, failure, and recovery traces." connected={integrations?.neatlogs} />
             <Platform name="Entire / cfo.ai" role="Entire records build history; cfo.ai holds the separate operating plan." />
           </div>
         </section>
@@ -306,7 +307,7 @@ function Platform({ name, role, connected }: { name: string; role: string; conne
 
 function PilotReport({
   pilot, finalPractice, passedHoldout, volumePerWeek, minutesPerCase, timeSavedPercent, hourlyCost, monthlyCapacity, monthlyValue,
-  setVolumePerWeek, setMinutesPerCase, setTimeSavedPercent, setHourlyCost, onResume,
+  setVolumePerWeek, setMinutesPerCase, setTimeSavedPercent, setHourlyCost, modelLabel, onResume,
 }: {
   pilot: PilotRun;
   finalPractice?: PilotRun["practiceRounds"][number];
@@ -321,6 +322,7 @@ function PilotReport({
   setMinutesPerCase: (value: number) => void;
   setTimeSavedPercent: (value: number) => void;
   setHourlyCost: (value: number) => void;
+  modelLabel: string;
   onResume: () => void;
 }) {
   const [expandedCaseId, setExpandedCaseId] = useState<string>();
@@ -338,7 +340,7 @@ function PilotReport({
     </div>
 
     {!done && <div className="pilot-progress-card">
-      <div className="pilot-progress-title"><span>{isFailed ? "The run paused" : phaseCopy[pilot.phase]}</span><small>{pilot.executionMode === "gmicloud" ? "GMI Cloud · Qwen3.8-Max" : "Deterministic sample preview"}</small></div>
+      <div className="pilot-progress-title"><span>{isFailed ? "The run paused" : phaseCopy[pilot.phase]}</span><small>{pilot.executionMode === "litellm" ? `LiteLLM · ${modelLabel}` : pilot.executionMode === "gmicloud" ? "Legacy GMI Cloud run" : "Deterministic sample preview"}</small></div>
       <div className="pilot-progress-track" aria-label="Probation progress">
         {progress.steps.map((step, index) => <div key={step} className={`pilot-progress-step ${index < progress.active ? "complete" : index === progress.active ? "current" : ""}`}>
           <span>{index < progress.active ? <Check size={13} /> : index + 1}</span><small>{step}</small>
@@ -391,6 +393,11 @@ function PilotReport({
               <span className={result.score.passed ? "pilot-pass-label" : "pilot-fail-label"}>{result.score.passed ? "PASS" : "MISS"}</span>
             </button>
             {expandedCaseId === result.caseId && <div className="pilot-case-detail">
+              {result.decision.agentProcess && <div className="pilot-agent-audit">
+                <span>BOUNDED AGENT TRACE</span>
+                <ol>{result.decision.agentProcess.steps.map((step, index) => <li key={`${index}-${step}`}>{step}</li>)}</ol>
+                <small>{result.decision.agentProcess.policyArticlesFound} policy article(s) · {result.decision.agentProcess.verification === "passed" ? "evidence verified" : "held for human review"} · {result.decision.agentProcess.revisions} revision(s)</small>
+              </div>}
               <span className="pilot-unsent-label">{result.decision.recommendation === "draft" ? "UNSENT DRAFT" : "HUMAN REVIEW RECOMMENDATION"}</span>
               <p>{result.decision.responseDraft}</p>
               <small>{result.decision.rationale}</small>
@@ -401,7 +408,7 @@ function PilotReport({
       </div>
 
       <section className="pilot-economics">
-        <div className="pilot-economics-copy"><div className="pilot-report-eyebrow">PILOT PLANNING ESTIMATE <span>ILLUSTRATIVE</span></div><h3>What might human-reviewed drafts help with?</h3><p>Estimated time assisted after a person reviews each draft. This is an assumption-based scenario, not a forecast or production result.</p><div className="pilot-estimate-output"><CircleDollarSign size={18} /><strong>{monthlyCapacity} hrs/mo</strong><span>≈ ${monthlyValue.toLocaleString()}/mo capacity scenario</span></div></div>
+        <div className="pilot-economics-copy"><div className="pilot-report-eyebrow">PILOT PLANNING ESTIMATE <span>ILLUSTRATIVE</span></div><h3>What might human-reviewed drafts help with?</h3><p>Estimated time assisted after a person reviews each draft. This is an assumption-based scenario, not a forecast or production result.</p><div className="pilot-estimate-output"><CircleDollarSign size={18} /><strong>{monthlyCapacity} hrs/mo</strong><span>≈ ${monthlyValue.toLocaleString()}/mo capacity scenario</span></div><a className="pilot-cfo-link" href="https://app.cfo.ai/s/p_AQGSpQYkNDhjMTcyNTgtZWIxOS00MTYyLWE3ZjQtOTFhN2Q2NGJmZTgxJDY1Yzc4ZjNkLTRkNDQtNDk3ZC1hODI5LThiOTIzZTlkMmE5ZA" target="_blank" rel="noreferrer">Open the editable JobSmith operating plan <ExternalLink size={12} /></a></div>
         <div className="pilot-assumption-fields">
           <label>Support cases per week<input type="number" min={0} max={100000} value={volumePerWeek} onChange={(event) => setVolumePerWeek(Math.max(0, Number(event.target.value)))} /></label>
           <label>Minutes per case<input type="number" min={0} max={240} value={minutesPerCase} onChange={(event) => setMinutesPerCase(Math.max(0, Number(event.target.value)))} /></label>

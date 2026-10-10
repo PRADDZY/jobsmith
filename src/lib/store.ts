@@ -4,6 +4,8 @@ import { mkdirSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { randomUUID } from "node:crypto";
 import type { AgentMode, EvaluatedCase, PilotRun, RoleSignal, RunMode, RunSummary } from "./contracts";
+import { resolveNewExecutionMode } from "./provider";
+import { completedCaseIds, mergeEvaluationResult } from "./run-recovery";
 
 type RunRow = {
   id: string;
@@ -68,23 +70,24 @@ function toSummary(row: RunRow): RunSummary {
       mode: normalizeAgentMode(result.decision.mode),
     },
   }));
-  const passed = results.filter((result) => result.score.passed).length;
-  const decisionCorrect = results.filter((result) => result.score.decisionCorrect).length;
-  const evidenceCovered = results.filter((result) => result.score.citationsValid && result.score.relevantEvidenceFound).length;
-  const safeEscalations = results.filter((result) => result.decision.recommendation === "escalate" && result.score.decisionCorrect).length;
-  const unsupportedClaims = results.reduce((sum, result) => sum + result.score.unsupportedClaims, 0);
-  const averageLatencyMs = results.length
-    ? Math.round(results.reduce((sum, result) => sum + result.score.latencyMs, 0) / results.length)
+  const completedResults = results.filter((result) => result.decision.mode !== "unavailable");
+  const passed = completedResults.filter((result) => result.score.passed).length;
+  const decisionCorrect = completedResults.filter((result) => result.score.decisionCorrect).length;
+  const evidenceCovered = completedResults.filter((result) => result.score.citationsValid && result.score.relevantEvidenceFound).length;
+  const safeEscalations = completedResults.filter((result) => result.decision.recommendation === "escalate" && result.score.decisionCorrect).length;
+  const unsupportedClaims = completedResults.reduce((sum, result) => sum + result.score.unsupportedClaims, 0);
+  const averageLatencyMs = completedResults.length
+    ? Math.round(completedResults.reduce((sum, result) => sum + result.score.latencyMs, 0) / completedResults.length)
     : 0;
 
   return {
     id: row.id,
     mode: row.mode,
-    status: row.status,
+    status: row.status === "completed" && completedResults.length < row.cases_total ? "failed" : row.status,
     createdAt: row.created_at,
     completedAt: row.completed_at || undefined,
     casesTotal: row.cases_total,
-    casesCompleted: row.cases_completed,
+    casesCompleted: completedResults.length,
     passed,
     decisionAccuracy: results.length ? Math.round((decisionCorrect / results.length) * 100) : 0,
     evidenceCoverage: results.length ? Math.round((evidenceCovered / results.length) * 100) : 0,
@@ -97,7 +100,7 @@ function toSummary(row: RunRow): RunSummary {
 }
 
 function normalizeAgentMode(value: string): AgentMode {
-  if (value === "gmicloud" || value === "sample" || value === "unavailable") return value;
+  if (value === "litellm" || value === "gmicloud" || value === "sample" || value === "unavailable") return value;
   if (value === "openrouter" || value === "legacy") return "legacy";
   return "sample";
 }
@@ -105,7 +108,7 @@ function normalizeAgentMode(value: string): AgentMode {
 export function createRun(mode: RunMode, casesTotal: number): RunSummary {
   const row: RunRow = {
     id: randomUUID(), mode, status: "pending", created_at: new Date().toISOString(), completed_at: null,
-    cases_total: casesTotal, cases_completed: 0, results_json: "[]", agent_mode: process.env.GMICLOUD_API_KEY ? "gmicloud" : "sample",
+    cases_total: casesTotal, cases_completed: 0, results_json: "[]", agent_mode: resolveNewExecutionMode(),
   };
   database().prepare(`INSERT INTO evaluation_runs
     (id, mode, status, created_at, cases_total, results_json, agent_mode) VALUES
@@ -124,24 +127,31 @@ export function listRuns(limit = 8): RunSummary[] {
 }
 
 export function beginRun(id: string): void {
-  database().prepare("UPDATE evaluation_runs SET status = 'running' WHERE id = ? AND status IN ('pending', 'running')").run(id);
+  database().prepare("UPDATE evaluation_runs SET status = 'running', completed_at = NULL WHERE id = ? AND status IN ('pending', 'running', 'failed')").run(id);
 }
 
 export function appendRunResult(id: string, result: EvaluatedCase): void {
   const db = database();
   const row = db.prepare("SELECT results_json, agent_mode FROM evaluation_runs WHERE id = ?").get(id) as Pick<RunRow, "results_json" | "agent_mode"> | undefined;
   if (!row) throw new Error("Evaluation run was not found.");
-  const results = JSON.parse(row.results_json) as EvaluatedCase[];
-  if (!results.some((item) => item.caseId === result.caseId)) results.push(result);
-  const agentMode = results.some((item) => item.decision.mode === "gmicloud")
-    ? "gmicloud"
-    : results.some((item) => item.decision.mode === "legacy") ? "legacy"
-      : results.some((item) => item.decision.mode === "unavailable") ? "unavailable" : "sample";
+  const previous = JSON.parse(row.results_json) as EvaluatedCase[];
+  const results = mergeEvaluationResult(previous, result);
+  const completed = completedCaseIds(results).size;
+  const completedModes = results.filter((item) => item.decision.mode !== "unavailable").map((item) => item.decision.mode);
+  const agentMode = completedModes.includes("litellm") ? "litellm"
+    : completedModes.includes("gmicloud") ? "gmicloud"
+      : completedModes.includes("legacy") ? "legacy"
+        : completedModes.includes("sample") ? "sample" : normalizeAgentMode(row.agent_mode);
   db.prepare("UPDATE evaluation_runs SET results_json = ?, cases_completed = ?, agent_mode = ?, status = 'running' WHERE id = ?")
-    .run(JSON.stringify(results), results.length, agentMode, id);
+    .run(JSON.stringify(results), completed, agentMode, id);
 }
 
 export function completeRun(id: string): void {
+  const row = database().prepare("SELECT cases_total, results_json FROM evaluation_runs WHERE id = ?")
+    .get(id) as { cases_total: number; results_json: string } | undefined;
+  if (!row) throw new Error("Evaluation run was not found.");
+  const completed = completedCaseIds(JSON.parse(row.results_json) as EvaluatedCase[]).size;
+  if (completed < row.cases_total) throw new Error(`Evaluation still has ${row.cases_total - completed} unfinished case(s).`);
   database().prepare("UPDATE evaluation_runs SET status = 'completed', completed_at = ? WHERE id = ?")
     .run(new Date().toISOString(), id);
 }
@@ -160,7 +170,7 @@ export function createPilot(role: RoleSignal, sourceWarning?: string, requestedM
     createdAt: now,
     updatedAt: now,
     role,
-    executionMode: requestedMode ?? (process.env.GMICLOUD_API_KEY ? "gmicloud" : "sample"),
+    executionMode: requestedMode ?? resolveNewExecutionMode(),
     duties: [],
     practiceRounds: [],
     holdoutResults: [],
