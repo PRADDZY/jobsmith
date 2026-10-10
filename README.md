@@ -39,11 +39,8 @@ Open [http://localhost:3000](http://localhost:3000). The project runs without se
 | `NEATLOGS_API_KEY` | Trace export | Optional locally; the SDK initializes once with the server process. |
 | `NEATLOGS_ENDPOINT` | Trace export | Defaults to `https://ingest.neatlogs.com`. |
 | `DATABASE_PATH` | Run storage | Defaults to `./data/jobsmith.sqlite`. Keep this on persistent disk for deployment. |
-| `CFO_MCP_URL` | Planned CFO integration | Defaults to `https://api.cfo.ai/mcp`; connection and scenario writing are not in this build yet. |
-| `APP_BASE_URL` | OAuth/deployment setup | Use the public HTTPS URL after deployment. |
-| `SESSION_SECRET` | OAuth/session work | Generate a random value locally before enabling session-backed integrations. |
 
-`CFO_CLIENT_ID`, `CFO_CLIENT_SECRET`, and the callback URI are reserved for the later OAuth flow. Do not paste secrets into chat or commit them.
+The cfo.ai connection is managed by Codex through MCP; no cfo.ai OAuth credentials belong in the app's `.env.local`.
 
 ## Use the demo
 
@@ -53,6 +50,7 @@ Open [http://localhost:3000](http://localhost:3000). The project runs without se
 4. Open **Workflow lab** to compare a draft with its source article and explain the human-review boundary.
 5. Open **Hiring signals**. If CrustData is not configured, the screen explicitly labels the examples as samples; with a key, refresh to load indexed public roles and source links.
 6. Change the pilot-economics assumptions and describe the result as an editable scenario rather than a forecast.
+7. For the cfo.ai sponsor demo, open the private **JobSmith Customer Pilot** and **JobSmith Operating Plan** pages and show their separate, assumption-labeled scenarios.
 
 For a short capture, record the browser at 1440×900, start on Overview, and keep the browser console hidden. Capture one full held-out run, then show the evidence ledger and a source article. A 2–3 minute walkthrough is enough; do not imply that a customer inbox or production company data is connected.
 
@@ -83,7 +81,7 @@ The integration tests use no real customer data or external credentials.
 
 ## Current integration boundary
 
-CrustData, OpenRouter, and Neatlogs have application paths in this build. cfo.ai is not yet connected to the app: its official MCP OAuth setup and workspace-specific scenario work remain a follow-up. The editable economics panel is local-only and must not be described as a cfo.ai result.
+CrustData, OpenRouter, and Neatlogs have application paths in this build. cfo.ai is connected separately through Codex MCP, with an illustrative customer-pilot scenario and a separate JobSmith operating-plan scenario in the private workspace. The app's editable economics panel is local-only and is not live-linked to those CFO models.
 
 ## Security and data
 

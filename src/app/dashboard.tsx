@@ -14,7 +14,7 @@ type View = "overview" | "signals" | "lab" | "proof";
 type Health = {
   status: string;
   agentMode: "openrouter" | "rules-preview";
-  integrations: { openrouter: boolean; crustdata: boolean; neatlogs: boolean; cfo: boolean };
+  integrations: { openrouter: boolean; crustdata: boolean; neatlogs: boolean };
 };
 
 const navigation: { id: View; label: string; icon: typeof Gauge; tag?: string }[] = [
