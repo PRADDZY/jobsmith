@@ -5,7 +5,7 @@
 - [x] Verify the selected runs use a live CrustData listing and LiteLLM; both are clearly labeled in the app.
 - [ ] Confirm both JobSmith Neatlogs sessions finalize and capture their public dashboard links. Session IDs and measured results are in `evidence.md`.
 - [x] Capture a failed model action, saved role/workflow state, and a resumed run; recovery details are in `evidence.md`.
-- [ ] Save the final Entire checkpoint/graph after the local commit.
+- [ ] Approve the seven pending Codex hooks in `/hooks`, then verify Entire records a checkpoint for this branch.
 - [x] Confirm the cfo.ai plan includes price, customers, revenue, inference and hosting costs, gross margin, burn, and runway; the scenario labels its inputs as assumptions.
 - [ ] Record and publish a demo video of three minutes or less. The video must explicitly explain the role of Neatlogs, Entire, and cfo.ai.
 - [ ] Replace pending trace links in `evidence.md` after dashboard verification; measured results are recorded.

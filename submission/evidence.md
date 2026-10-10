@@ -32,7 +32,8 @@ Do not publish until the trace links, recording, team details, and public links 
 ## Required partner proof
 
 - Neatlogs traces: pending dashboard verification; session IDs are listed above.
-- Entire checkpoint or graph: pending final local commit/checkpoint.
+- Entire checkpoint or graph: pending Codex hook approval. `entire enable` reports enabled, but `entire status` shows seven Codex hooks need approval and `entire checkpoint list` currently shows zero checkpoints.
+- Local commits: `6cacfe6` (`tighten pilot workflow`) and `a5d5201` (`prepare neatHack demo notes`). They remain local and have not been pushed.
 - cfo.ai operating plan: [Open the illustrative JobSmith plan](https://app.cfo.ai/s/p_AQGSpQYkNDhjMTcyNTgtZWIxOS00MTYyLWE3ZjQtOTFhN2Q2NGJmZTgxJDY1Yzc4ZjNkLTRkNDQtNDk3ZC1hODI5LThiOTIzZTlkMmE5ZA).
 - Demo video (under three minutes): not recorded.
 - Public repository: not published; this workspace is intentionally not pushed.
