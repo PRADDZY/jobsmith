@@ -1,6 +1,6 @@
 # Submission evidence
 
-Do not publish until the trace links, recording, team details, and public links are verified. No API keys, customer data, or evaluator labels belong here.
+Do not submit until the trace links and recording are verified. Team and repository details below are current. No API keys, customer data, or evaluator labels belong here.
 
 ## Agent improvement
 
@@ -33,15 +33,15 @@ Do not publish until the trace links, recording, team details, and public links 
 
 - Neatlogs traces: pending dashboard verification; session IDs are listed above.
 - Entire checkpoint or graph: pending Codex hook approval. `entire enable` reports enabled, but `entire status` shows seven Codex hooks need approval and `entire checkpoint list` currently shows zero checkpoints.
-- Local commits: `6cacfe6` (`tighten pilot workflow`) and `a5d5201` (`prepare neatHack demo notes`). They remain local and have not been pushed.
-- cfo.ai operating plan: [Open the illustrative JobSmith plan](https://app.cfo.ai/s/p_AQGSpQYkNDhjMTcyNTgtZWIxOS00MTYyLWE3ZjQtOTFhN2Q2NGJmZTgxJDY1Yzc4ZjNkLTRkNDQtNDk3ZC1hODI5LThiOTIzZTlkMmE5ZA).
+- Public implementation branch: [build/neathack-final](https://github.com/PRADDZY/jobsmith/tree/build/neathack-final). [PR #2](https://github.com/PRADDZY/jobsmith/pull/2) is open against `main`; latest implementation commit is `fb01a4a` (`clarify integration key status`). Earlier hackathon commits are `6cacfe6`, `a5d5201`, and `5ca575c`.
+- cfo.ai operating plan: [Open the illustrative JobSmith plan](https://app.cfo.ai/s/p_AQKSpQYkYzc5Mjg4NDQtMzA5Yi00ZWRjLTg4ZWYtNzY5OGU2M2JlOTA0JDY1Yzc4ZjNkLTRkNDQtNDk3ZC1hODI5LThiOTIzZTlkMmE5ZA).
 - Demo video (under three minutes): not recorded.
-- Public repository: not published; this workspace is intentionally not pushed.
+- Public repository: [PRADDZY/jobsmith](https://github.com/PRADDZY/jobsmith); the implementation branch is pushed and the PR is open, not yet merged.
 - Official X quote-post: not published; the team member must post it during the submission window.
 
 ## Team and project details
 
-- Team name: [fill in]
-- Team members: [fill in]
+- Team name: Hacktopus
+- Team members: Pratik Daithankar (solo)
 - Project name: JobSmith
 - One-line pitch: Decide whether a real support-role task is ready for a supervised AI coworker pilot.

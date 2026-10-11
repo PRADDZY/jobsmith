@@ -6,7 +6,7 @@
 
 ## 0:20-0:45 | Ground it in a real role
 
-Select the live CrustData listing for Technical Customer Support (Arabic Speaker) at respond.io. Point to the exact source quote and link.
+Select the live CrustData listing for Technical Customer Support (Arabic Speaker) at respond.io. Point to the exact source quote and link. If the live listing is unavailable, use a clearly labeled sample and do not describe it as live.
 
 ## 0:45-1:25 | Let the agent work
 
@@ -18,11 +18,11 @@ Show the passing run's 2/2 practice and 2/2 held-out results. Then open the earl
 
 ## 1:50-2:15 | Neatlogs and recovery evidence
 
-Open the Neatlogs sessions listed in `evidence.md`. Show the policy tool, model calls, verification, output, latency, tokens, and cost if reported. The first pilot session includes a structured-output failure, saved role and workflow, and a successful resume. Do not claim a dashboard trace is available until it is visible there.
+Open the verified Neatlogs trace links listed in `evidence.md`. Show the policy tool, model calls, verification, output, latency, tokens, and cost if reported. The first pilot session includes a structured-output failure, saved role and workflow, and a successful resume. Keep the recording in draft until the traces are finalized and readable in the dashboard.
 
 ## 2:15-2:30 | Entire
 
-Show the Entire checkpoint or graph for this build. Point out the provider compatibility, bounded verification, and recovery changes.
+Show the Entire checkpoint or graph for this build. Point out the provider compatibility, bounded verification, and recovery changes. Keep the recording in draft until the checkpoint is visible on the branch.
 
 ## 2:30-2:45 | cfo.ai and close
 

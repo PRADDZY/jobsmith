@@ -24,11 +24,11 @@ The fixture suite contains eight practice and eight held-out cases across billin
 | --- | --- |
 | CrustData | Finds public support-role listings and source links. |
 | LiteLLM | Routes Claude Haiku through an OpenAI-compatible API for duty extraction, workflow design, draft generation, and independent verification. |
-| Neatlogs | Records the role-to-decision trace, including tool lookup, model steps, verification, revisions, failures, and recovery. PII redaction is enabled. |
-| Entire | Captures code evolution and checkpoints in the Git workflow. It is not a runtime dependency. |
+| Neatlogs | Exports role-to-decision traces for tool lookup, model steps, verification, revisions, failures, and recovery. Dashboard readback verifies trace finalization. PII redaction is enabled. |
+| Entire | Captures coding context and checkpoints in the Git workflow. It is not a runtime dependency. |
 | cfo.ai | Holds a separate, editable illustrative operating plan and customer-pilot scenario. The app's quick capacity estimate is not linked to that model. |
 
-The cfo.ai JobSmith Operating Plan is available in the connected workspace at [Open operating plan](https://app.cfo.ai/s/p_AQGSpQYkNDhjMTcyNTgtZWIxOS00MTYyLWE3ZjQtOTFhN2Q2NGJmZTgxJDY1Yzc4ZjNkLTRkNDQtNDk3ZC1hODI5LThiOTIzZTlkMmE5ZA). It includes Base and Growth cases with editable assumptions, a 12-month forecast, operating costs, gross margin, cash, burn, and runway. All values are illustrative assumptions, not observed company actuals.
+The cfo.ai JobSmith Operating Plan is available in the connected workspace at [Open operating plan](https://app.cfo.ai/s/p_AQKSpQYkYzc5Mjg4NDQtMzA5Yi00ZWRjLTg4ZWYtNzY5OGU2M2JlOTA0JDY1Yzc4ZjNkLTRkNDQtNDk3ZC1hODI5LThiOTIzZTlkMmE5ZA). It includes Base and Growth cases with editable assumptions, a 12-month forecast, operating costs, gross margin, cash, burn, and runway. All values are illustrative assumptions, not observed company actuals.
 
 ## Run locally
 
@@ -57,6 +57,8 @@ Open [http://localhost:3000](http://localhost:3000). The app creates `data/jobsm
 
 New runs use LiteLLM or an explicitly selected deterministic preview. Existing GMI Cloud run records remain readable; they are not selected as a fallback for new runs.
 
+The dashboard's integration badges show environment-key presence only. They do not verify API connectivity or Neatlogs trace finalization.
+
 The cfo.ai connection is managed separately through the connected cfo.ai workspace. It does not require an app environment variable.
 
 ## Architecture
@@ -79,15 +81,9 @@ The model receives only the ticket text, the selected bounded workflow, and the 
 
 Completed cases are saved before the next begins. A failed model call fails the run without adding an unavailable result as a completed case. Resume skips saved successful cases and retries the failed case without creating duplicates.
 
-## Demo script (under 3 minutes)
+## Demo script
 
-1. **0:00-0:20:** “We help a team decide whether a real support-role duty is safe enough for an AI coworker probation test.” State that listings are public and all tickets and policies are synthetic.
-2. **0:20-0:45:** Select a live CrustData opening and point to the exact quoted duty. Clearly label it if using a sample listing.
-3. **0:45-1:30:** Start probation. Show the workflow, one practice result, and the unseen checks. Open a case to show policy lookup, the unsent draft, independent claim check, citation, and any single revision.
-4. **1:30-1:55:** Show the gate. Explain that a pass requires the checks in this small synthetic family; it is only a supervised sandbox candidate, never production approval.
-5. **1:55-2:20:** Open the Neatlogs trace and show the tool, model, verifier, and output steps. Show the Entire checkpoint for the build history.
-6. **2:20-2:45:** Open the cfo.ai operating plan. Call out its editable assumptions for customers, price, model and hosting costs, margin, burn, and runway.
-7. **2:45-3:00:** Close with the boundary: replies remain unsent, no account actions exist, and a human owns every next step.
+Use [`submission/demo-script.md`](submission/demo-script.md), which targets 2:45 and stays under the three-minute limit. Show only Neatlogs traces and Entire checkpoints that are visible and verified; keep the recording in draft if required proof is still pending.
 
 ## Checks
 
