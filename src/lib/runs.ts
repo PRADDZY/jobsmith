@@ -1,35 +1,23 @@
 import "server-only";
 import { setTraceOutput, trace } from "neatlogs";
 import { decideSupportCase } from "./agent";
-import type { AgentDecision, EvaluatedCase, SupportCase } from "./contracts";
+import type { AgentDecision, EvaluatedCase } from "./contracts";
 import { knowledgeBase, supportCases } from "./fixtures";
 import { ensureObservability } from "./observability";
 import { scoreDecision } from "./scoring";
 import { appendRunResult, beginRun, completeRun, failRun, getRun } from "./store";
-
-function unavailableDecision(testCase: SupportCase): AgentDecision {
-  return {
-    recommendation: "escalate",
-    category: testCase.category,
-    responseDraft: "I’m holding this for a support specialist because the automated decision could not be completed. No action has been taken on the account.",
-    citations: [],
-    claims: [],
-    confidence: 0,
-    rationale: "The model request failed; this case is held for human review.",
-    mode: "unavailable",
-  };
-}
+import { completedCaseIds } from "./run-recovery";
 
 export async function resumeEvaluation(id: string): Promise<void> {
-  await ensureObservability();
   const current = getRun(id);
   if (!current) throw new Error("Evaluation run was not found.");
   if (current.status === "completed") return;
   const cases = supportCases.filter((testCase) => testCase.practice === (current.mode === "practice"));
-  const completed = new Set(current.results.map((result) => result.caseId));
+  const completed = completedCaseIds(current.results);
   beginRun(id);
 
   try {
+    await ensureObservability();
     await trace({
       name: "jobsmith.evaluation-run",
       sessionId: id,
@@ -42,16 +30,11 @@ export async function resumeEvaluation(id: string): Promise<void> {
         if (completed.has(testCase.id)) continue;
         const evidence = knowledgeBase.filter((article) => article.category === testCase.category);
         const started = Date.now();
-        let decision: AgentDecision;
-        try {
-          decision = await trace({
-            name: "jobsmith.support-case",
-            input: { ticketId: testCase.id, subject: testCase.subject, message: testCase.message },
-            attributes: { ticket_id: testCase.id, ticket_category: testCase.category, evidence_count: evidence.length },
-          }, () => decideSupportCase(testCase, evidence));
-        } catch {
-          decision = unavailableDecision(testCase);
-        }
+        const decision: AgentDecision = await trace({
+          name: "jobsmith.support-case",
+          input: { ticketId: testCase.id, subject: testCase.subject, message: testCase.message },
+          attributes: { ticket_id: testCase.id, ticket_category: testCase.category, evidence_count: evidence.length },
+        }, () => decideSupportCase(testCase, evidence));
         const evaluated: EvaluatedCase = {
           caseId: testCase.id,
           decision,
@@ -66,6 +49,7 @@ export async function resumeEvaluation(id: string): Promise<void> {
         completed: finalRun?.casesCompleted ?? 0,
         passed: finalRun?.passed ?? 0,
         evidenceCoverage: finalRun?.evidenceCoverage ?? 0,
+        provider: finalRun?.agentMode ?? "sample",
       });
     });
   } catch (error) {

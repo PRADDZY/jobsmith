@@ -1,7 +1,7 @@
 export type RunMode = "practice" | "evaluation";
 export type Recommendation = "draft" | "escalate";
 export type Category = "billing" | "access" | "security" | "account";
-export type AgentMode = "gmicloud" | "sample" | "legacy" | "unavailable";
+export type AgentMode = "litellm" | "gmicloud" | "sample" | "legacy" | "unavailable";
 
 export interface KnowledgeArticle {
   id: string;
@@ -34,6 +34,12 @@ export interface AgentDecision {
   confidence: number;
   rationale: string;
   mode: AgentMode;
+  agentProcess?: {
+    steps: string[];
+    verification: "passed" | "escalated";
+    revisions: number;
+    policyArticlesFound: number;
+  };
 }
 
 export interface CaseScore {
@@ -115,7 +121,7 @@ export interface PilotRun {
   updatedAt: string;
   completedAt?: string;
   role: RoleSignal;
-  executionMode: "gmicloud" | "sample";
+  executionMode: "litellm" | "gmicloud" | "sample";
   duties: RoleDuty[];
   selectedDuty?: RoleDuty;
   workflow?: BoundedWorkflow;

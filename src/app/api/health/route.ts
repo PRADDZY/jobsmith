@@ -1,4 +1,5 @@
 import { connection } from "next/server";
+import { resolveNewExecutionMode } from "@/lib/provider";
 
 export async function GET() {
   await connection();
@@ -6,10 +7,11 @@ export async function GET() {
   return Response.json({
     status: "ok",
     integrations: {
-      gmicloud: Boolean(process.env.GMICLOUD_API_KEY),
-      crustdata: Boolean(process.env.CRUSTDATA_API_KEY),
-      neatlogs: Boolean(process.env.NEATLOGS_API_KEY),
+      litellmKeyPresent: Boolean(process.env.LITELLM_API_KEY),
+      model: process.env.LITELLM_MODEL?.trim() || "claude-haiku",
+      crustdataKeyPresent: Boolean(process.env.CRUSTDATA_API_KEY),
+      neatlogsKeyPresent: Boolean(process.env.NEATLOGS_API_KEY),
     },
-    agentMode: process.env.GMICLOUD_API_KEY ? "gmicloud" : "sample",
+    agentMode: resolveNewExecutionMode(),
   });
 }

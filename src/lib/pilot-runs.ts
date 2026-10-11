@@ -172,11 +172,13 @@ export async function resumePilot(id: string): Promise<void> {
         && pilot.holdoutResults.every((result) => result.score.passed);
       const practicePasses = finalPracticeRound !== undefined
         && isRoundPassing(finalPracticeRound, practiceCases.length);
-      if (pilot.executionMode !== "gmicloud" || pilot.role.source !== "crustdata") {
+      if (pilot.executionMode !== "litellm" || pilot.role.source !== "crustdata") {
         pilot.recommendation = "preview_only";
-        pilot.recommendationReason = pilot.executionMode !== "gmicloud"
-          ? "The workflow ran with deterministic sample rules. Configure GMI Cloud for a live model evaluation before considering a supervised pilot."
-          : "This run used a bundled sample listing. Select a live CrustData listing before considering a supervised pilot.";
+        pilot.recommendationReason = pilot.executionMode === "sample"
+          ? "The workflow ran with deterministic sample rules. Configure LiteLLM for a live model evaluation before considering a supervised pilot."
+          : pilot.executionMode === "gmicloud"
+            ? "This saved run used the legacy GMI Cloud provider. Start a new LiteLLM run before considering a supervised pilot."
+            : "This run used a bundled sample listing. Select a live CrustData listing before considering a supervised pilot.";
       } else if (practicePasses && holdoutPasses) {
         pilot.recommendation = "pilot_candidate";
         pilot.recommendationReason = "The final workflow passed every practice and held-out synthetic check. Consider a supervised, no-customer-data pilot with human approval on every draft.";
@@ -204,9 +206,11 @@ export async function resumePilot(id: string): Promise<void> {
     if (current) {
       current.status = "failed";
       const message = error instanceof Error ? error.message : "The pilot run stopped unexpectedly.";
-      current.blockedReason = /unauthorized|\b401\b/i.test(message)
-        ? "GMI Cloud rejected the configured API key. Check GMICLOUD_API_KEY in .env.local, restart the app, then resume this saved run or use the labeled sample preview."
-        : message;
+        current.blockedReason = /unauthorized|\b401\b/i.test(message)
+          ? current.executionMode === "gmicloud"
+            ? "GMI Cloud rejected the key used by this saved run. Check its legacy GMICLOUD_API_KEY, or start a new run with LiteLLM."
+            : "LiteLLM rejected the configured key. Check LITELLM_API_KEY in .env.local, restart the app, then resume this saved run or choose the labeled sample preview."
+          : message;
       update(current);
     }
     throw error;

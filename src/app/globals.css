@@ -243,10 +243,12 @@ button:disabled { cursor: not-allowed; opacity: .58; }
 .pilot-brand-period { color: #cd8565; }
 .pilot-topbar-right { display: flex; align-items: center; gap: 24px; }
 .pilot-integration-status { display: flex; align-items: center; gap: 15px; }
-.pilot-integration-status span, .pilot-platform > span { display: inline-flex; align-items: center; gap: 6px; color: #89938f; font-size: 10px; font-weight: 630; }
+.pilot-integration-status > span, .pilot-platform > span { display: inline-flex; align-items: center; gap: 6px; color: #89938f; font-size: 10px; font-weight: 630; }
 .pilot-integration-status i, .pilot-platform i { width: 6px; height: 6px; border-radius: 50%; background: #c7a26e; }
-.pilot-integration-status .connected i, .pilot-platform .is-connected i { background: #5b9a7f; box-shadow: 0 0 0 3px #5b9a7f18; }
-.pilot-integration-status .sample i { background: #d5a567; }
+.pilot-integration-status .key-present i { background: #83968c; }
+.pilot-integration-status .not-configured i { background: #d5a567; }
+.pilot-integration-status .checking i { background: #b3bcb7; }
+.pilot-integration-status b { color: #6d7f76; font-size: 8px; font-weight: 560; }
 .pilot-topbar-note { display: inline-flex; align-items: center; gap: 6px; color: #67877c; font-size: 10px; font-weight: 620; }
 .pilot-layout { width: min(100% - 48px, 1080px); margin: 0 auto; }
 .pilot-intro { padding: 55px 0 37px; max-width: 790px; }
@@ -378,6 +380,10 @@ button:disabled { cursor: not-allowed; opacity: .58; }
 .pilot-pass-label { color: #5a8a67; }
 .pilot-fail-label { color: #b2685c; }
 .pilot-case-detail { padding: 10px 12px 11px 35px; border-top: 1px solid #eef1eb; background: #fafbf7; }
+.pilot-agent-audit { margin: 0 0 10px; padding: 8px 10px; border-left: 2px solid #97b6a0; background: #f2f6ef; }
+.pilot-agent-audit > span { color: #66816f; font-size: 7px; font-weight: 800; letter-spacing: .7px; }
+.pilot-agent-audit ol { display: grid; gap: 4px; margin: 6px 0; padding-left: 15px; color: #66776c; font-size: 8px; line-height: 1.4; }
+.pilot-agent-audit small { color: #87958a; font-size: 7px; }
 .pilot-unsent-label { color: #749081; font-size: 7px; font-weight: 780; letter-spacing: .65px; }
 .pilot-case-detail p { margin: 6px 0; color: #5a6d62; font: 12px/1.55 Georgia, "Times New Roman", serif; }
 .pilot-case-detail small { display: block; color: #8c9891; font-size: 8px; line-height: 1.45; }
@@ -387,6 +393,8 @@ button:disabled { cursor: not-allowed; opacity: .58; }
 .pilot-estimate-output { display: flex; align-items: center; gap: 8px; margin-top: 15px; color: #65836b; }
 .pilot-estimate-output strong { color: #3c654c; font: 500 22px Georgia, "Times New Roman", serif; }
 .pilot-estimate-output span { color: #7c8d80; font-size: 9px; }
+.pilot-cfo-link { display: inline-flex; align-items: center; gap: 5px; margin-top: 11px; color: #557b65; font-size: 9px; font-weight: 650; text-decoration: none; }
+.pilot-cfo-link:hover { color: #315b43; text-decoration: underline; }
 .pilot-assumption-fields { display: grid; grid-template-columns: repeat(2, 1fr); align-content: center; gap: 9px; }
 .pilot-assumption-fields label { display: grid; gap: 5px; color: #839088; font-size: 8px; line-height: 1.3; }
 .pilot-assumption-fields input { width: 100%; min-width: 0; height: 31px; padding: 0 7px; border: 1px solid #dce4d9; border-radius: 4px; color: #41594b; background: #fffefa; font-size: 10px; }
