@@ -27,17 +27,18 @@ Do not submit until the trace links and recording are verified. Team and reposit
 
 - SDK initialization and export flush succeeded with PII redaction enabled.
 - The controlled doctor probe was accepted and reached the `raw_durable` stage, but authenticated readback still returned `202 processing` when checked. Confirm the project traces finalize in the Neatlogs dashboard before claiming public trace URLs.
+- The app's `NEATLOGS_API_KEY` is an SDK ingestion credential. Neatlogs documents that ingestion credentials do not authorize Public API reads; dashboard/CLI trace verification uses a separate human OAuth login or a service-account token. See [Neatlogs authentication](https://docs.neatlogs.com/api-reference/authentication) and the [CLI guide](https://docs.neatlogs.com/cli). No token should be pasted into chat or committed.
 - Doctor probe trace ID: `24ddb8e49e5f1a203405891d831f8852`.
 
 ## Required partner proof
 
 - Neatlogs traces: pending dashboard verification; session IDs are listed above.
-- Entire checkpoint or graph: pending Codex hook approval. `entire enable` reports enabled, but `entire status` shows seven Codex hooks need approval and `entire checkpoint list` currently shows zero checkpoints.
+- Entire checkpoint or graph: pending Codex hook approval. `entire enable` reports enabled, but `entire status` still shows seven Codex hooks need approval and `entire checkpoint list` currently shows zero checkpoints. Recheck after approving the hooks in `/hooks`.
 - Public implementation branch: [build/neathack-final](https://github.com/PRADDZY/jobsmith/tree/build/neathack-final); [PR #2](https://github.com/PRADDZY/jobsmith/pull/2) targets `main`. Its commit history shows code and evidence work dated Oct 10-11, 2026.
 - cfo.ai operating plan: [Open the illustrative JobSmith plan](https://app.cfo.ai/s/p_AQKSpQYkYzc5Mjg4NDQtMzA5Yi00ZWRjLTg4ZWYtNzY5OGU2M2JlOTA0JDY1Yzc4ZjNkLTRkNDQtNDk3ZC1hODI5LThiOTIzZTlkMmE5ZA).
-- Demo video (under three minutes): not recorded.
+- Demo video (under three minutes): not recorded. A 2:48 evidence-led script with a 12-second margin is in `demo-script.md`; keep it private until the Neatlogs and Entire evidence is verified.
 - Public repository: [PRADDZY/jobsmith](https://github.com/PRADDZY/jobsmith); the implementation branch is pushed and linked from PR #2.
-- Official X quote-post: not published; the team member must post it during the submission window.
+- Official X quote-post: not published; the team member must quote the official post during the submission window. The current draft is in `social-post-draft.md`.
 
 ## Team and project details
 

@@ -1,36 +1,49 @@
-# JobSmith demo script (2:45 target)
+# JobSmith demo script (2:48 target)
 
-## 0:00-0:20 | The decision
+Keep this recording as a draft until the Neatlogs traces and Entire checkpoint below are visible and verified. The event requires a public demo of three minutes or less. Show no customer data; every support case and policy is synthetic.
 
-"A team should not have to guess whether an AI coworker is safe for a support task. JobSmith starts from a real support role and tests one bounded duty before anyone considers a supervised pilot." State that the listing is public while all support cases and policies are synthetic.
+## 0:00-0:15 | The decision
 
-## 0:20-0:45 | Ground it in a real role
+"JobSmith tests whether one support duty is ready for a supervised AI coworker pilot. It starts from a real public job listing, runs synthetic cases through a bounded workflow, and gives a go or no-go recommendation."
 
-Select the live CrustData listing for Technical Customer Support (Arabic Speaker) at respond.io. Point to the exact source quote and link. If the live listing is unavailable, use a clearly labeled sample and do not describe it as live.
+Show the final recommendation first. State the boundary: there is no customer inbox, reply sending, or account access connected.
 
-## 0:45-1:25 | Let the agent work
+## 0:15-0:32 | A real role, a bounded task
 
-Start probation. Show role analysis, bounded workflow design, and the current phase. Explain that each case invokes one policy lookup, prepares an unsent draft or escalation, and sends claims to an independent verifier. Open a held-out case to show its policy reference, citation check, and response.
+Open the live CrustData listing for Technical Customer Support (Arabic Speaker) at respond.io. Point to the source quote and link. Show the selected repeatable duty and the goal given to the agent. If the live listing has disappeared, use a clearly marked sample and call it a sample.
 
-## 1:25-1:50 | Show the gate
+## 0:32-1:10 | The agent completes the task
 
-Show the passing run's 2/2 practice and 2/2 held-out results. Then open the earlier no-go run from recent history: it passed 1/2 in each set after two revisions. Each sample is small, and a pass only qualifies as a supervised sandbox candidate. No inbox is connected, and the app cannot send replies or change an account.
+Start probation. Show the plan, retrieved policy, one synthetic access-recovery case, the unsent draft, and the independent claim check. Explain how the agent uses each result to decide what to do next. Open a held-out case and point to its source policy citation. Show that missing recovery details or offered credentials route to a person.
 
-## 1:50-2:15 | Neatlogs and recovery evidence
+## 1:10-1:30 | Failure, retained state, recovery
 
-Open the verified Neatlogs trace links listed in `evidence.md`. Show the policy tool, model calls, verification, output, latency, tokens, and cost if reported. The first pilot session includes a structured-output failure, saved role and workflow, and a successful resume. Keep the recording in draft until the traces are finalized and readable in the dashboard.
+Open the earlier run at its structured-output failure. Show that the role and workflow state were saved, resume that same pilot, and point to the completed case list without duplicates. Explain that the first response failed schema validation; the agent resumed after the output schema was made provider-compatible and model text was bounded locally.
 
-## 2:15-2:30 | Entire
+## 1:30-1:50 | Evidence of improvement
 
-Show the Entire checkpoint or graph for this build. Point out the provider compatibility, bounded verification, and recovery changes. Keep the recording in draft until the checkpoint is visible on the branch.
+Compare the before and after runs: 2/4 versus 4/4 synthetic checks passed, and the recommendation changed from no-go to supervised pilot candidate. State that each run had only two practice and two held-out cases, and the model-selected duty titles differed, so this is directional evidence rather than a controlled A/B test. A passing result only permits a supervised sandbox pilot.
 
-## 2:30-2:45 | cfo.ai and close
+## 1:50-2:12 | Neatlogs: runtime evidence and iteration
 
-Open the editable JobSmith operating plan. Point to customer and price assumptions, revenue, inference and hosting costs, gross margin, burn, and runway. State that the figures are illustrative assumptions. Close: "The result is evidence for a supervised next step, never autonomous production approval."
+Open the verified before and after trace links in `evidence.md`. Describe the architecture and implementation: the Neatlogs SDK traces the model, policy tool, verification, and recovery path. Show the runtime spans and any latency, token, or cost fields that are actually present. Explain the failure the traces exposed, the code change it motivated, and the measured result. Do not claim fields the trace does not show.
+
+## 2:12-2:28 | Entire: build context behind the fix
+
+Open the verified Entire checkpoint or graph for this branch. Point to the saved coding context and the changes for provider-compatible output, bounded verification, and failure recovery. Explain why that context helped make and review the fix; show the resulting checkpoint on the public repository branch.
+
+## 2:28-2:42 | cfo.ai: business assumptions
+
+Open the editable JobSmith plan. Show the proposed price and customer assumptions, revenue, inference and hosting costs, gross margin, burn, and runway. Explain that cfo.ai was used to test whether the supervised evaluation service could support a business; the figures are planning assumptions, not validated results.
+
+## 2:42-2:48 | Close
+
+"JobSmith turns an AI coworker idea into evidence for a supervised next step, never autonomous production approval."
 
 ## Capture notes
 
-- Keep the recording below three minutes, including transitions.
-- Use the same live role and access task family for both runs. Their extracted duty titles differ, so describe the comparison as directional rather than a controlled A/B test.
+- Keep the final video under three minutes, including transitions. Rehearse once with a timer and leave a few seconds of margin.
+- Use the verified public trace links and checkpoint in the recording. If any link is still pending, record only a private draft and replace that segment before publishing.
 - Keep synthetic names and evaluator labels out of the recording.
-- Replace pending evidence references in `evidence.md` after capturing the video and checking the trace dashboard.
+- Preserve the directional-comparison caveat wherever the 2/4 and 4/4 results appear.
+- Make the three partner roles explicit in narration: Neatlogs captures and informs runtime improvement; Entire preserves the coding context and change history; cfo.ai models the business assumptions.

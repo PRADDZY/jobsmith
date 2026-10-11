@@ -83,7 +83,7 @@ Completed cases are saved before the next begins. A failed model call fails the 
 
 ## Demo script
 
-Use [`submission/demo-script.md`](submission/demo-script.md), which targets 2:45 and stays under the three-minute limit. Show only Neatlogs traces and Entire checkpoints that are visible and verified; keep the recording in draft if required proof is still pending.
+Use [`submission/demo-script.md`](submission/demo-script.md), which targets 2:48 and leaves a 12-second margin under the three-minute limit. Show only Neatlogs traces and Entire checkpoints that are visible and verified; keep the recording in draft if required proof is still pending.
 
 ## Checks
 
@@ -100,8 +100,8 @@ The automated tests use synthetic fixtures and do not require external keys. A l
 
 - Public repository with setup instructions and no service credentials.
 - Public demo video under three minutes.
-- Neatlogs trace showing the role-to-decision path and a verifier or recovery step.
-- Entire checkpoint/graph for this implementation.
+- Verified before/after Neatlogs traces showing the role-to-decision path and failure recovery; run IDs and metrics are in [`submission/evidence.md`](submission/evidence.md).
+- Entire checkpoint/graph for this implementation, linked from [`submission/evidence.md`](submission/evidence.md).
 - cfo.ai business plan with pricing, customer assumptions, revenue, inference and hosting costs, gross margin, operating burn, and runway.
 - Public quote post on the official Neatlogs hackathon post using `#neatHack`; draft copy belongs in `submission/social-post-draft.md` and must be published by a team member.
 - Use Neatlogs, Entire, and cfo.ai in the submitted project and demo.
