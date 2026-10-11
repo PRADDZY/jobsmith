@@ -7,10 +7,10 @@ export async function GET() {
   return Response.json({
     status: "ok",
     integrations: {
-      litellm: Boolean(process.env.LITELLM_API_KEY),
+      litellmKeyPresent: Boolean(process.env.LITELLM_API_KEY),
       model: process.env.LITELLM_MODEL?.trim() || "claude-haiku",
-      crustdata: Boolean(process.env.CRUSTDATA_API_KEY),
-      neatlogs: Boolean(process.env.NEATLOGS_API_KEY),
+      crustdataKeyPresent: Boolean(process.env.CRUSTDATA_API_KEY),
+      neatlogsKeyPresent: Boolean(process.env.NEATLOGS_API_KEY),
     },
     agentMode: resolveNewExecutionMode(),
   });

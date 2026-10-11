@@ -243,10 +243,12 @@ button:disabled { cursor: not-allowed; opacity: .58; }
 .pilot-brand-period { color: #cd8565; }
 .pilot-topbar-right { display: flex; align-items: center; gap: 24px; }
 .pilot-integration-status { display: flex; align-items: center; gap: 15px; }
-.pilot-integration-status span, .pilot-platform > span { display: inline-flex; align-items: center; gap: 6px; color: #89938f; font-size: 10px; font-weight: 630; }
+.pilot-integration-status > span, .pilot-platform > span { display: inline-flex; align-items: center; gap: 6px; color: #89938f; font-size: 10px; font-weight: 630; }
 .pilot-integration-status i, .pilot-platform i { width: 6px; height: 6px; border-radius: 50%; background: #c7a26e; }
-.pilot-integration-status .connected i, .pilot-platform .is-connected i { background: #5b9a7f; box-shadow: 0 0 0 3px #5b9a7f18; }
-.pilot-integration-status .sample i { background: #d5a567; }
+.pilot-integration-status .key-present i { background: #83968c; }
+.pilot-integration-status .not-configured i { background: #d5a567; }
+.pilot-integration-status .checking i { background: #b3bcb7; }
+.pilot-integration-status b { color: #6d7f76; font-size: 8px; font-weight: 560; }
 .pilot-topbar-note { display: inline-flex; align-items: center; gap: 6px; color: #67877c; font-size: 10px; font-weight: 620; }
 .pilot-layout { width: min(100% - 48px, 1080px); margin: 0 auto; }
 .pilot-intro { padding: 55px 0 37px; max-width: 790px; }
