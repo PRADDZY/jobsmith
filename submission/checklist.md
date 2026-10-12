@@ -30,7 +30,7 @@ Deadline: **October 12, 2026, 11:55 PM IST.** The team member must complete the 
 - [ ] Quote-tweet the official launch post: https://x.com/bettersayAJ/status/2109639214723932495
 - [ ] Include the exact tags `@neatlogs`, `@EntireHQ`, and `@arithecfo`, keep the original post attached, and attach the demo video.
 - [ ] Confirm the quote-post is public; copy its URL.
-- [ ] Complete https://neatlogs.com/submission, paste the quote-post URL and public project details, then press the final submit button.
+- [ ] In https://neatlogs.com/submission, verify the check-in email and complete the form with the quote-post URL, project name, public GitHub repository, location, founder/work details, and short descriptions of the neatlogs, Entire, and cfo.ai use. Review the entry and press **Submit project**.
 - [ ] Verify the event page confirms receipt before 11:55 PM IST.
 
 Use [`social-post-draft.md`](social-post-draft.md) as the short copy. The team member will publish and submit from their account.
