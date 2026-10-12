@@ -83,7 +83,7 @@ Completed cases are saved before the next begins. A failed model call fails the 
 
 ## Demo script
 
-Use [`submission/demo-script.md`](submission/demo-script.md), which targets 2:48 and leaves a 12-second margin under the three-minute limit. Show only Neatlogs traces and Entire checkpoints that are visible and verified; keep the recording in draft if required proof is still pending.
+The narrated demo transcript is in [`submission/final-demo-transcript.md`](submission/final-demo-transcript.md). The local MP4 is generated outside the repository; see [`submission/checklist.md`](submission/checklist.md) for final playback, Neatlogs trace-readback, and submission status. The video describes Neatlogs instrumentation without claiming unverified dashboard links.
 
 ## Checks
 

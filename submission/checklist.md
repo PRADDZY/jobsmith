@@ -1,34 +1,36 @@
 # neatHack submission checklist
 
+Deadline: **October 12, 2026, 11:55 PM IST.** The team member must complete the public X quote-post and the neatlogs submission form before cutoff.
+
 ## Judge proof map
 
-The [official neatHack page](https://neatlogs.com/hackathon) assigns 30% to the agent, 25% to use of neatlogs, Entire, and cfo.ai, 20% to the demo video, 15% to building in public, and 10% to usefulness and originality. It asks for evidence judges can check and says the video must explicitly cover each partner's role in the architecture, implementation, runtime, reasoning, and result.
-
-| Criterion | Evidence to show |
+| Criterion | What the submission shows |
 | --- | --- |
-| Agent (30%) | One complete role-to-decision run: planning, policy tool use, state, held-out checks, independent verification, failure, recovery, and the supervised go/no-go gate. |
-| Partner tools (25%) | Finalized before/after Neatlogs traces; an Entire checkpoint or graph tied to the implementation; the editable cfo.ai plan with pricing, costs, revenue, and runway assumptions. |
-| Demo (20%) | Public video under three minutes. Explain the role of each partner and show its verified evidence. |
-| Building in public (15%) | Public quote post on the official submission thread with team, project, public repository, demo link, and `#neatHack`. |
-| Usefulness/originality (10%) | Explain the concrete hiring decision supported and the human-review boundary. |
+| Agent (30%) | Live role signal, bounded account-access workflow, synthetic practice and held-out cases, independent policy checks, visible failure/recovery, and human pilot gate. |
+| Partner tools (25%) | Neatlogs runtime instrumentation (dashboard links still need confirmation); an Entire source-linked graph search; the editable, explicitly illustrative cfo.ai operating plan. |
+| Demo (20%) | Narrated 7-scene MP4 with the real app outcomes, partner roles, limits, and problem/solution explanation. Confirm it stays under three minutes before upload. |
+| Building in public (15%) | Quote-post the official launch post with the required tags, project, public repo, and attached demo. |
+| Usefulness/originality (10%) | Helps a team decide which repeatable support task is suitable for a supervised AI pilot; it does not act on customers. |
 
-## Build and public evidence
+## Verified project evidence
 
-- [x] Verify the selected runs use a live CrustData listing and LiteLLM; both are clearly labeled in the app.
-- [x] Capture the failed model action, retained role/workflow state, and resumed run; details and run IDs are in `evidence.md`.
-- [x] Confirm the cfo.ai plan includes price, customers, revenue, inference and hosting costs, gross margin, burn, and runway; inputs are labeled as assumptions.
-- [x] Push the implementation branch and verify the public repository has project-specific setup instructions, no committed secrets, no AWS/Neatlogs private setup notes, and commits dated during neatHack.
-- [ ] Confirm both JobSmith Neatlogs sessions are finalized and capture public dashboard links. Session IDs and measured results are in `evidence.md`.
-- [ ] Approve the seven pending Codex hooks in `/hooks`, then verify Entire records a checkpoint for this branch.
-- [ ] Replace pending trace references in `evidence.md` only after verifying the traces in the dashboard.
-- [ ] Record and publish a video under three minutes using [`demo-script.md`](demo-script.md); show verified partner proof and keep the directional-comparison caveat.
+- [x] Live CrustData listing and LiteLLM provider are identified in the app.
+- [x] Before/after synthetic run IDs, case counts, failure/recovery, and caveats are recorded in [`evidence.md`](evidence.md).
+- [x] cfo.ai operating plan is linked and its assumptions are explicitly labeled illustrative.
+- [x] Public implementation branch and repository setup instructions verified; private AWS/Neatlogs setup and credentials stay out of Git.
+- [x] Entire hooks are active. A source-linked Entire Graph query was run and recorded in [`entire-graph-proof.md`](entire-graph-proof.md). No checkpoint was created during this documentation/video session.
+- [x] Seven-scene MP4 decoded successfully with H.264 video, AAC narration, audible sound, and 79.27-second duration (under three minutes).
+- [ ] Open the Neatlogs dashboard, locate both pilot session IDs, and verify/copy public trace links. Current API readback returned `202 processing`, so no trace URL is claimed yet.
+- [ ] Attach the verified MP4 to the X quote-post.
 
-## Publish
+## Publish before cutoff
 
-- [x] Confirm the team name and member details: Hacktopus, solo member Pratik Daithankar.
-- [ ] Confirm the team is checked in and its team details are correct in the event system.
-- [ ] On October 12, 2026, submit during the 7:00-11:55 PM IST planned window; check Discord for the actual cutoff and the official post.
-- [ ] When the official post is live, quote-post it on X with the team, project name, public repository, and public demo link. Keep the original official post attached.
-- [ ] Publish the prepared copy in `social-post-draft.md` after replacing every placeholder and checking each claim against `evidence.md`.
-- [ ] Aim to post early in the submission window: the official page says neatlogs and cfo.ai will engage with the first 50 quote tweets.
-- [ ] Verify the X post is public and the video and repository links open without sign-in.
+- [x] Team: Hacktopus, solo member Pratik Daithankar; team check-in/details were confirmed.
+- [ ] Check the event channel for any cutoff update.
+- [ ] Quote-tweet the official launch post: https://x.com/bettersayAJ/status/2109639214723932495
+- [ ] Include the exact tags `@neatlogs`, `@EntireHQ`, and `@arithecfo`, keep the original post attached, and attach the demo video.
+- [ ] Confirm the quote-post is public; copy its URL.
+- [ ] Complete https://neatlogs.com/submission, paste the quote-post URL and public project details, then press the final submit button.
+- [ ] Verify the event page confirms receipt before 11:55 PM IST.
+
+Use [`social-post-draft.md`](social-post-draft.md) as the short copy. The team member will publish and submit from their account.
